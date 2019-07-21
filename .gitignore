@@ -3,6 +3,7 @@ cscope.*
 Makefile
 tags
 .vscode/
+*.swp
 
 
 
