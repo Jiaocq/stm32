@@ -1,0 +1,9 @@
+build/*
+cscope.*
+Makefile
+tags
+.vscode/
+
+
+
+
