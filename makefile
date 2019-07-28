@@ -24,6 +24,7 @@ C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include
 C_INCLUDES += -IDrivers/CMSIS/Include 
 C_INCLUDES += -IDrivers/CMSIS/DSP/Include
 C_INCLUDES += -Iapp
+C_INCLUDES += -Idrv
 
 
 ######################################
@@ -33,7 +34,7 @@ C_INCLUDES += -Iapp
 C_SOURCE_DIR += app/*.c
 C_SOURCE_DIR += Src/*.c
 C_SOURCE_DIR += Drivers/STM32F4xx_HAL_Driver/Src/*.c
-
+C_SOURCE_DIR += drv/*.c
 
 ######################################
 # ASM source
