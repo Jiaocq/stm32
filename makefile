@@ -23,12 +23,14 @@ C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy
 C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include 
 C_INCLUDES += -IDrivers/CMSIS/Include 
 C_INCLUDES += -IDrivers/CMSIS/DSP/Include
+C_INCLUDES += -Iapp
 
 
 ######################################
 # source
 ######################################
 # C_SOURCE
+C_SOURCE_DIR += app/*.c
 C_SOURCE_DIR += Src/*.c
 C_SOURCE_DIR += Drivers/STM32F4xx_HAL_Driver/Src/*.c
 
