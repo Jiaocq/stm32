@@ -44,9 +44,31 @@
 #define TOFROMHIO   0x4/**u94 */
 #define TOAI        0x3 /**u96 */
 
-#define IOCONDATA   0x18
+/**init status */
+static int initStatus = 0;
 
-static uint32_t WriteDIDO(uint32_t sendData)
+
+static uint8_t ReadDIDO(uint32_t sendData)
+{
+    uint32_t readData = 0;
+    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, 0);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t*)&readData,(uint8_t *)&sendData, FrameLength, TIMEOUT);
+    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, 1);
+    DelayUs(5);
+    return (uint8_t)((0xffUL)&(readData >> 8));
+}
+
+static uint8_t ReadAIHIO(uint32_t sendData)
+{
+    uint32_t readData = 0;
+    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, 0);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t*)&readData,(uint8_t *)&sendData, FrameLength, TIMEOUT);
+    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, 1);
+    DelayUs(5);
+    return (uint8_t)((0xffUL)&(readData >> 8));
+}
+
+static int32_t WriteDIDO(uint32_t sendData)
 {
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, 0);
     HAL_SPI_Transmit(&IOSPIBUS, (uint8_t *)&sendData, FrameLength, TIMEOUT);
@@ -63,19 +85,118 @@ static uint32_t WriteAIHIO(uint32_t sendData)
     DelayUs(5);
     return 0;
 }
-
-int SpiioInit()
+/**init spi io */
+static void MCP23S17DIDOInit(uint8_t devAddr)
 {
+/** set FROMDO's IOCON , input mode */
+WriteDIDO(WriteReg(devAddr,IOCONA,0x38));
+WriteDIDO(WriteReg(devAddr,IOCONB,0x38));
+WriteDIDO(WriteReg(devAddr,IODIRA,0xff));
+WriteDIDO(WriteReg(devAddr,IODIRB,0xff));
+}
 
-// 54     /*Configure all GPIO signed as SW1*/
-//  255     Write23s17(MCP23S17_ADDR_0, IOCONA, 0x38U);
-//  256     Write23s17(MCP23S17_ADDR_0, IODIRA, 0x00U);  /*Set GPA7~0 direction: output*/
-//  257     Write23s17(MCP23S17_ADDR_0, OLATA, 0x00U);  /*Set GPA7~0 output: 1 */ /*Turn on SW1(Point_8~Point_15)*/
-//  258     Write23s17(MCP23S17_ADDR_0, IOCONB, 0x38U);
-//  259     Write23s17(MCP23S17_ADDR_0, IODIRB, 0x00U); /*GPB7~0: output*/
-//  260     Write23s17(MCP23S17_ADDR_0, OLATB, 0x00U);  /*Turn on SW1(Point_0~Point_7)*/
+static void MCP23S17AIHIOInit(uint8_t devAddr)
+{
+/** set FROMDO's IOCON , input mode */
+WriteAIHIO(WriteReg(devAddr,IOCONA,0x38));
+WriteAIHIO(WriteReg(devAddr,IOCONB,0x38));
+WriteAIHIO(WriteReg(devAddr,IODIRA,0xff));
+WriteAIHIO(WriteReg(devAddr,IODIRB,0xff));
+}
+/**deinit spi io */
+static void MCP23S17DIDODeinit(uint8_t devAddr)
+{
+/** set FROMDO's IOCON , input mode */
+WriteDIDO(WriteReg(devAddr,IOCONA,0x38));
+WriteDIDO(WriteReg(devAddr,IOCONB,0x38));
+WriteDIDO(WriteReg(devAddr,IODIRA,0xff));
+WriteDIDO(WriteReg(devAddr,IODIRB,0xff));
+}
 
+static void MCP23S17AIHIODeinit(uint8_t devAddr)
+{
+/** set FROMDO's IOCON , input mode */
+WriteAIHIO(WriteReg(devAddr,IOCONA,0x38));
+WriteAIHIO(WriteReg(devAddr,IOCONB,0x38));
+WriteAIHIO(WriteReg(devAddr,IODIRA,0xff));
+WriteAIHIO(WriteReg(devAddr,IODIRB,0xff));
+}
 
+int SpiioIinit()
+{
+/** configure  */
+/**reset all gpio */
+HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port,MCU_SPI2_RESET_MCP23S17_Pin,0);
+DelayUs(5);
+HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port,MCU_SPI2_RESET_MCP23S17_Pin,1);
+/** set DIDO , input mode */
+MCP23S17DIDOInit(FROMDO);
+MCP23S17DIDOInit(TODI);
+MCP23S17DIDOInit(TODO);
+MCP23S17DIDOInit(FROMDI);
+/** set AIHIO , input mode */
+MCP23S17AIHIOInit(FROMHIO);
+MCP23S17AIHIOInit(TOFROMHIO);
+MCP23S17AIHIOInit(TOAI);
+initStatus = 1;      
+return 0;
+}
 
+int SpiioDeinit()
+{
+/** configure  */
+/**reset all gpio */
+HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port,MCU_SPI2_RESET_MCP23S17_Pin,0);
+DelayUs(5);
+HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port,MCU_SPI2_RESET_MCP23S17_Pin,1);
+/** set DIDO , input mode */
+MCP23S17DIDODeinit(FROMDO);
+MCP23S17DIDODeinit(TODI);
+MCP23S17DIDODeinit(TODO);
+MCP23S17DIDODeinit(FROMDI);
+/** set AIHIO , input mode */
+MCP23S17AIHIODeinit(FROMHIO);
+MCP23S17AIHIODeinit(TOFROMHIO);
+MCP23S17AIHIODeinit(TOAI);
+initStatus = 0;      
+return 0;
+}
+/**write a pin
+ * FROMDO   TODI     TODO     FROMDI   FROMHIO  TOFROMHIO TOAI     
+ */
+int WriteDIDOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
+{
+    switch (devId)
+    {
+    case FROMDO:
+        break;
+    case TODI:
+        break;
+    case TODO:
+        break;
+    case FROMDI : 
+        break;
+    default:
+        break;
+    }
+    return 0;   
+}           
+
+/**write a pin
+ *   FROMHIO  TOFROMHIO TOAI     
+ */
+int WriteAIHIOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
+{
+    switch (devId)
+    {
+    case FROMHIO : 
+        break;
+    case TOFROMHIO : 
+        break;
+    case TOAI : 
+        break;
+    default:
+        break;
+    }   
     return 0;
 }
