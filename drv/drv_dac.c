@@ -23,7 +23,8 @@
 #define AD5686FrameLength 3         /*byte */
 // #define AD5686PwrDwn(channel)       ((0x4UL<< 20 | 0x2UL << (2*channel)) << 8) /*channel :0-3 */
 // #define AD5686PwrUp(channel)        ((0x4UL<< 20 | 0x0UL << (2*channel)) << 8) /*channel :0-3 */
-static int WriteDAC8568(uint32_t sendData)
+
+static int32_t WriteDAC8568(uint32_t sendData)
 {
     HAL_GPIO_WritePin(SPI3_DAC_AICS_GPIO_Port, SPI3_DAC_AICS_Pin, 0);
     HAL_SPI_Transmit(&SPIBUS, (uint8_t *)&sendData, DAC8568FrameLength, TIMEOUT);
@@ -31,7 +32,8 @@ static int WriteDAC8568(uint32_t sendData)
     DelayUs(5);
     return 0;
 }
-static int WriteAD5686(uint32_t sendData)
+
+static int32_t WriteAD5686(uint32_t sendData)
 {
     HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 0);
     HAL_SPI_Transmit(&SPIBUS, (uint8_t *)&sendData, AD5686FrameLength, TIMEOUT);
@@ -40,7 +42,8 @@ static int WriteAD5686(uint32_t sendData)
 
 return 0;
 }
-static int ReadbackAD5686(uint32_t sendData)
+
+static int32_t ReadbackAD5686(uint32_t sendData)
 {
     uint32_t recvData = 0;
     HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 0);
@@ -55,7 +58,8 @@ static int ReadbackAD5686(uint32_t sendData)
     return 0;
     
 }
-int DAC8568Init()
+
+int32_t DAC8568Init()
 {
     uint32_t sendData = 0;
     /*reset dac8568 */
@@ -76,8 +80,7 @@ int DAC8568Init()
     return 0;
 }
 
-
-int AD5686Init()
+int32_t AD5686Init()
 {
     uint32_t sendData = 0;
     /*software reset  */
@@ -91,13 +94,14 @@ int AD5686Init()
     WriteAD5686(sendData);
     return 0;
 }
+
 /**
  * write a dac channel
  * channel 1-4
  * data 0-0xffff
  * return 0,-1: success ,failure
  * */
-int WriteAD5686Value(uint32_t channel, uint32_t data)
+int32_t WriteAD5686Value(uint32_t channel, uint32_t data)
 {
     uint32_t sendData = 0;
     channel = 1 << channel;
@@ -125,21 +129,24 @@ int WriteAD5686Value(uint32_t channel, uint32_t data)
  * channel 0-7
  * data 0-0xffff
  */
-int WriteDAC8568Value(uint32_t channel, uint32_t data)
+int32_t WriteDAC8568Value(uint32_t channel, uint32_t data)
 {
-    /* write a channel */
     uint32_t sendData = 0;
+    /**power up */
+    sendData = DAC8568PwrUpAll;
+    WriteDAC8568(sendData);
+    /* write a channel */
     sendData = DAC8568WrtReg(channel, data);
     WriteDAC8568(sendData);
     return 0;
 }
+
 /**write all ch using the same value
  * data 0-0xffff
  * return 0
  */
-int WriteDAC8568AllCh(uint32_t data)
+int32_t WriteDAC8568AllCh(uint32_t data)
 {
-    /* write a channel */
     uint32_t sendData = 0;
     /**power up */
     sendData = DAC8568PwrUpAll;
@@ -149,7 +156,11 @@ int WriteDAC8568AllCh(uint32_t data)
     WriteDAC8568(sendData);
     return 0;
 }
-int WriteAD5686AllCh(uint32_t data)
+
+/**data : 0-0xffff
+ * return : 0,-1 : success, failure
+ */
+int32_t WriteAD5686AllCh(uint32_t data)
 {
     uint32_t sendData = 0;
     /*power up all dac */

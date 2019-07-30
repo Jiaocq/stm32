@@ -16,6 +16,7 @@
 #define STIMULATION_STABLE_TIME 1000
 #define VOLTAGE_FOR_2LINE       1200  // in units of mV
 
+#define ERROR_NONE       0
 #define ERROR_INIT       1
 #define ERROR_MODULE     2
 #define ERROR_TEST_FATAL 3
@@ -205,4 +206,6 @@ int test_AI_tb(int* result);
  * 1: more operation.
  */
 int test_HIO_tb(int* result);
+
+int manage_entry();
 #endif

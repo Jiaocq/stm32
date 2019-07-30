@@ -20,11 +20,11 @@ static int results[4][16] = {{1,}, {1,}, {1,}, {1,}};
 int test_DI_tb(int* result)
 {
 	static int state_DI_test = 0;
+	static int channel_index = 0;
+	static unsigned long long time_start = 0;
+	static int value = 0;
+	static int num = 0;
 	int ret;
-	int value;
-	int num;
-	int channel_index;
-	unsigned long long time_start;
 	ret = TEST_MORE_OPERATION;
 	switch(state_DI_test)
 	{
@@ -40,7 +40,7 @@ int test_DI_tb(int* result)
 		state_DI_test++;
 		break;
 	case 2:
-		if ((get_time_ms() - time_start) > STIMULATION_STABLE_TIME)
+		if ((get_time_ms() - time_start) >= STIMULATION_STABLE_TIME)
 		{
 			if (value != get_tb_digital_output(DI_TB, channel_index + 1))
 			{
@@ -84,13 +84,13 @@ const int voltage_values[VOLTAGE_TEST_NUM] = { 0, 500, 1000, 2500, 0};
 int test_AI_tb(int* result)
 {
 	static int state_AI_test = 0;
+	static int channel_index = 0;
+	static unsigned long long time_start = 0;
+	static int value = 0;
+	static int expect_voltage_value = 0;
+	static int voltage_value_index = 0;
 	int ret;
-	int value;
-	int voltage_value_index;
 	int num;
-	int channel_index;
-	unsigned long long time_start;
-	int expect_voltage_value;
 	int voltage_A1;
 	int voltage_A2;
 
@@ -211,16 +211,17 @@ int manage_entry()
 		switch (state)
 		{
 		case FATAL:
-			set_error_indication(1);
+			set_error_indication(ERROR_INIT);
 			break;
 		case IDLE:
 			module = get_test_module_flag();
 			if ((module < 1) || (module > 4))
 			{
-				set_error_indication(2);
+				set_error_indication(ERROR_MODULE);
 			}
 			else
 			{
+				set_error_indication(ERROR_NONE);
 				// Set state and result for specified module.
 				set_module_state(module, state);
 				set_module_testing_result(module, results[module - 1]);

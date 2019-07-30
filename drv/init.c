@@ -7,7 +7,7 @@
 
 extern void SystemClock_Config(void);
 
-int systemInit()
+int HardwareInit()
 {
     HAL_Init();
     SystemClock_Config();

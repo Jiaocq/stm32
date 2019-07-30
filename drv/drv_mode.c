@@ -1,6 +1,8 @@
 #include "gpio.h"
 #include "main.h"
 
+
+/**return : key state 0x0-0xf */
 int getModeValue()
 {
     int mode =0;
