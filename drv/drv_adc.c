@@ -190,7 +190,8 @@ int32_t HIOAdcInit()
         return ret;
     return 0;
 }
-/**read adc channel */
+/**read adc channel 
+ * channel : 0-7 */
 int32_t AIReadCh(uint32_t channel)
 {
     int32_t ret = 0;

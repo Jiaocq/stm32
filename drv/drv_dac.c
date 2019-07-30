@@ -63,7 +63,7 @@ int32_t DAC8568Init()
 {
     uint32_t sendData = 0;
     /*reset dac8568 */
-    sendData = DAC8568Rst;
+    sendData = AD5686Rst;
     WriteDAC8568(sendData);
     /*ignore extern clr */
     sendData = DAC8568IgnExtClr;
@@ -97,7 +97,7 @@ int32_t AD5686Init()
 
 /**
  * write a dac channel
- * channel 1-4
+ * channel 0-3
  * data 0-0xffff
  * return 0,-1: success ,failure
  * */
@@ -114,7 +114,7 @@ int32_t WriteAD5686Value(uint32_t channel, uint32_t data)
         return -1;
     }
     /*write data */
-    sendData = DAC8568WrtReg(channel, data);
+    sendData = AD5686WrtReg(channel, data);
     WriteAD5686(sendData);
     /*readback data last write */
     if(0 != ReadbackAD5686(sendData))
