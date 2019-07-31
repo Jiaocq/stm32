@@ -339,7 +339,7 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
     switch (tb_type)
     {
     case 1: /**DI */
-        WriteDIDOPin(TODI, channel - 1, (uint8_t)value);
+        WriteDIDOPin(TODI, 16 - channel, (uint8_t)value);
         break;
     case 2: /**DO */
         WriteDIDOPin(TODO, channel - 1, (uint8_t)value);
@@ -377,7 +377,7 @@ int get_tb_digital_output(int tb_type, int channel)
         if (channel >= 1 && channel <= 4)
             value = ReadAIHIOPin(TOFROMHIO, channel - 1);
         if (channel >= 5 && channel <= 8)
-            value = ReadAIHIOPin(FROMHIO, channel - 1);
+            value = ReadAIHIOPin(FROMHIO, 12 - channel);
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
@@ -404,15 +404,15 @@ void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value);  /**2lines manage */
             WriteAIHIOPin(TOAI, channel - 1, 0); /**4line manage */
+            WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value);  /**2lines manage */
         }
         break;
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value);  /**2line */
             WriteAIHIOPin(TOFROMHIO, channel + 3, 0); /**4line */
+            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value);  /**2line */
         }
         break;
     default:
@@ -482,7 +482,6 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            /**对应问题 */
             *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
         }
@@ -511,7 +510,7 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
  *  channel 1~8
  *  value   0~2500, in units of mV
  */
-void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value)
+void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
 {
     switch (tb_type)
     {
@@ -540,13 +539,58 @@ void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value)
 }
 
 /*
+ * Set AI tb stimulation by 4 lines mode.
+ * parameters:
+ *  channel    1~8
+ *  value_A1   voltage at A1 point, in units of mV
+ *  value_A2   voltage at A2 point, in units of mV
+ */
+int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
+{
+    switch (tb_type)
+    {
+    case 1: /**DI */
+        break;
+    case 2: /**DO */
+        break;
+    case 3: /**AI */
+        if (channel >= 1 && channel <= 8)
+        {
+            *value_A1 = (int)(AIReadCh(channel - 1) *  2500L / 0xffL);
+            *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
+        }
+        break;
+    case 4: /**HIO */
+        if (channel >= 9 && channel <= 10)
+        {
+            *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+        }
+        else if (channel >= 11 && channel <= 12)
+        {
+            *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+        }
+        break;
+    default:
+        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+        break;
+    }
+    if (*value_A1 < 0 || *value_A2 < 0)
+    {
+        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+        return -1;
+    }
+    return 0;
+}
+/*
  * Set HIO-AO tb stimulation by 4 lines mode.
  * parameters:
  *  channel    1~8
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int set_tb_ao_stimulation(int tb_type, int channel, int value)
+int set_tb_hio_ao_stimulation(int tb_type, int channel, int value)
 {
     int ret = 0;
     switch (tb_type)
@@ -577,7 +621,7 @@ int set_tb_ao_stimulation(int tb_type, int channel, int value)
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int get_tb_ao_output(int tb_type, int channel, int *value)
+int get_tb_hio_ao_output(int tb_type, int channel, int *value)
 {
     switch (tb_type)
     {

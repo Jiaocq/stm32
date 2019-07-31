@@ -44,6 +44,7 @@ static int32_t ReadAIAdc(uint32_t sendData)
     }
     return (int32_t)recvData;
 }
+
 static uint16_t ReqAIAdc(uint32_t sendData)
 {
     HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, 0);
@@ -69,6 +70,7 @@ static uint16_t ReadDIGAdc(uint32_t sendData)
     }
     return (int32_t)recvData;
 }
+
 static uint16_t ReqDIGAdc(uint32_t sendData)
 {
     HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, 0);
@@ -95,6 +97,7 @@ static uint16_t ReadHIOAdc(uint32_t sendData)
     }
     return (int32_t)recvData;
 }
+
 static uint16_t ReqHIOAdc(uint32_t sendData)
 {
     HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, 0);
@@ -104,95 +107,126 @@ static uint16_t ReqHIOAdc(uint32_t sendData)
     return 0;
 }
 
+/**return 0 for no err */
 int32_t AIAdcInit()
 {
     int ret = 0;
+           ReqAIAdc(AD7689ReadCfg(0));
     ret = ReadAIAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(1));
     ret = ReadAIAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(2));
     ret = ReadAIAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(3));
     ret = ReadAIAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(4));
     ret = ReadAIAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(5));
     ret = ReadAIAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(6));
     ret = ReadAIAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
+           ReqAIAdc(AD7689ReadCfg(7));
     ret = ReadAIAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;
     return 0;
 }
+
+/**return 0 for no err */
 int32_t DIGAdcInit()
 {
     int ret = 0;
+           ReqDIGAdc(AD7689ReadCfg(0));
     ret = ReadDIGAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(1));
     ret = ReadDIGAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(2));
     ret = ReadDIGAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(3));
     ret = ReadDIGAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(4));
     ret = ReadDIGAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(5));
     ret = ReadDIGAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(6));
     ret = ReadDIGAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
+           ReqDIGAdc(AD7689ReadCfg(7));
     ret = ReadDIGAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;
     return 0;
 }
+
+/**return 0 for no err  */
 int32_t HIOAdcInit()
 {
     int ret = 0;
+       ReqHIOAdc(AD7689ReadCfg(0));
     ret = ReadHIOAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(1));
     ret = ReadHIOAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(2));
     ret = ReadHIOAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(3));
     ret = ReadHIOAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(4));
     ret = ReadHIOAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(5));
     ret = ReadHIOAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(6));
     ret = ReadHIOAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
+           ReqHIOAdc(AD7689ReadCfg(7));
     ret = ReadHIOAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;
     return 0;
 }
+
 /**read adc channel 
- * channel : 0-7 */
+ * channel : 0-7 
+ * return -1 or >0 for err and channel value*/
 int32_t AIReadCh(uint32_t channel)
 {
     int32_t ret = 0;
@@ -200,7 +234,10 @@ int32_t AIReadCh(uint32_t channel)
     ret = ReadAIAdc(AD7689ReadCfg(channel));
     return ret;
 }
-/**read adc channel */
+
+/**read adc channel
+ * channel : 0-7 
+ * return -1 or >0 for err and channel value*/
 int32_t HIOReadCh(uint32_t channel)
 {
     int32_t ret = 0;
@@ -208,7 +245,10 @@ int32_t HIOReadCh(uint32_t channel)
     ret = ReadHIOAdc(AD7689ReadCfg(channel));
     return ret;
 }
-/**read adc channel */
+
+/**read adc channel
+ * channel : 0-7 
+ * return -1 or >0 for err and channel value*/
 int32_t DIGReadCh(uint32_t channel)
 {
     int32_t ret = 0;
