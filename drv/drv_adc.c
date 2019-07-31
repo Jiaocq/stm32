@@ -4,6 +4,7 @@
 #include "spi.h"
 #include "drv_time.h"
 #include "drv_uart.h"
+#include "main.h"
 
 #define AIAdcSPIBUS hspi4  /**u88 u91 */
 #define DIGAdcSPIBUS hspi4 /**u88 u91 */
@@ -15,7 +16,7 @@
 
 #define AD7689ReadCfg(channel) ((0x1UL << 13 | 0x6UL << 10 | channel << 7 | 0x1UL << 6 | 0x7UL << 3 | 0x1UL << 1) << 2) /**channel 0-7 */
 
- struct CFG
+struct CFG
 {
     uint16_t nop : 2;
     uint16_t readBack : 1;

@@ -10,6 +10,13 @@
 #include "drv_uart.h"
 #include "common.h"
 
+/*
+ * Hardware init
+ *
+ * return value:
+ * 0: hardware initi successfully.
+ * others: hardware init failed.
+ */
 int hw_init()
 {
     int ret = 0;
@@ -21,18 +28,34 @@ int hw_init()
     ret -= DAC8568Init();
     LEDInit();
     ret -= SpiioDeinit();
-    WriteLED(LED5, 1); /**power */
+    WriteLED(LED5, 1); /**power led on*/
     return ret;
 }
 
+/*
+ * Get current time in units of ms
+ */
 unsigned long long get_time_ms()
 {
     return (unsigned long long)TimeMs();
 }
 
+/*
+ * Get test module indication.
+ *
+ * return value:
+ * 0: no module being selected
+ * 1: test DI module
+ * 2: test DO module
+ * 3: test AI module
+ * 4: test HIO module
+ * -1: failed to get indication or invalid indication.
+ *
+ */
 int get_test_module_flag()
 {
-    switch (getModeValue()) {
+    switch (getModeValue())
+    {
 
     case 0:
         return 0;
@@ -49,7 +72,14 @@ int get_test_module_flag()
     }
 }
 
-/*Continuous trigger */
+/*
+ * get start event
+ *
+ * return value:
+ * 1: start signal arrived
+ * 0: no start signal
+ * single trigger 
+ * */
 int get_start_event()
 {
     static int state = 0;
@@ -57,26 +87,37 @@ int get_start_event()
     static uint64_t startTime = 0;
     static uint64_t keepTime = 0;
     static const uint64_t changeStateTime = 50;
-    switch (getStartKey()) {
+    switch (getStartKey())
+    {
     case 0:
-        if (0 == lastState) {
+        if (0 == lastState)
+        {
             keepTime = TimeMs() - startTime;
-        } else {
+        }
+        else
+        {
             startTime = TimeMs();
+            keepTime = 0;
         }
         lastState = 0;
-        if (changeStateTime < keepTime) {
+        if (changeStateTime < keepTime)
+        {
             state = 0;
         }
         break;
     case 1:
-        if (1 == lastState) {
+        if (1 == lastState)
+        {
             keepTime = TimeMs() - startTime;
-        } else {
+        }
+        else
+        {
             startTime = TimeMs();
+            keepTime = 0;
         }
         lastState = 1;
-        if (0 == state && changeStateTime < keepTime) {
+        if (0 == state && changeStateTime < keepTime)
+        {
             state = 1;
             return 1;
         }
@@ -101,7 +142,8 @@ void set_module_state(int module, int state)
         blinkState = (uint8_t)(TimeMs() / (uint64_t)100 % (uint64_t)2);
     else
         blinkState = (uint8_t)(TimeMs() / (uint64_t)500 % (uint64_t)2);
-    switch (module) {
+    switch (module)
+    {
     case 1:
         WriteLED(LED11, 0);
         WriteLED(LED13, 0);
@@ -145,32 +187,68 @@ void set_module_state(int module, int state)
 void set_module_testing_result(int module, int *result)
 {
     uint8_t blinkState = 0;
-    switch (*result) {
-    case 0:
-        blinkState = 0;
-        break;
+    blinkState = (uint8_t)(TimeMs() / (uint64_t)50 % (uint64_t)2);
+    switch (module)
+    {
     case 1:
-        blinkState = 1;
-        break;
-    case -1:
-        blinkState = (uint8_t)(TimeMs() / (uint64_t)50 % (uint64_t)2);
-        break;
-    default:
-        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
-        return;
-    }
-    switch (module) {
-    case 1:
-        WriteLED(LED16, blinkState);
+        WriteLED(LED33, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
+        WriteLED(LED32, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
+        WriteLED(LED31, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
+        WriteLED(LED30, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
+        WriteLED(LED29, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
+        WriteLED(LED28, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
+        WriteLED(LED27, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
+        WriteLED(LED26, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
+        WriteLED(LED25, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
+        WriteLED(LED24, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
+        WriteLED(LED23, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
+        WriteLED(LED22, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
+        WriteLED(LED21, *(result + 0xc) < 0 ? blinkState : *(result + 0xc));
+        WriteLED(LED20, *(result + 0xd) < 0 ? blinkState : *(result + 0xd));
+        WriteLED(LED19, *(result + 0xe) < 0 ? blinkState : *(result + 0xe));
+        WriteLED(LED18, *(result + 0xf) < 0 ? blinkState : *(result + 0xf));
         break;
     case 2:
-        WriteLED(LED14, blinkState);
+        WriteLED(LED49, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
+        WriteLED(LED48, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
+        WriteLED(LED47, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
+        WriteLED(LED46, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
+        WriteLED(LED45, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
+        WriteLED(LED44, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
+        WriteLED(LED43, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
+        WriteLED(LED42, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
+        WriteLED(LED41, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
+        WriteLED(LED40, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
+        WriteLED(LED39, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
+        WriteLED(LED38, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
+        WriteLED(LED37, *(result + 0xc) < 0 ? blinkState : *(result + 0xc));
+        WriteLED(LED36, *(result + 0xd) < 0 ? blinkState : *(result + 0xd));
+        WriteLED(LED35, *(result + 0xe) < 0 ? blinkState : *(result + 0xe));
+        WriteLED(LED34, *(result + 0xf) < 0 ? blinkState : *(result + 0xf));
         break;
     case 4:
-        WriteLED(LED10, blinkState);
+        WriteLED(LED57, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
+        WriteLED(LED56, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
+        WriteLED(LED55, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
+        WriteLED(LED54, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
+        WriteLED(LED53, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
+        WriteLED(LED52, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
+        WriteLED(LED51, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
+        WriteLED(LED50, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
         break;
     case 8:
-        WriteLED(LED12, blinkState);
+        WriteLED(LED69, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
+        WriteLED(LED68, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
+        WriteLED(LED67, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
+        WriteLED(LED66, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
+        WriteLED(LED65, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
+        WriteLED(LED64, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
+        WriteLED(LED63, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
+        WriteLED(LED62, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
+        WriteLED(LED61, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
+        WriteLED(LED60, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
+        WriteLED(LED59, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
+        WriteLED(LED58, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
@@ -184,9 +262,8 @@ void set_module_testing_result(int module, int *result)
 void set_normal_run_flag()
 {
     uint8_t blinkState = (uint8_t)(TimeMs() / (uint64_t)500 % (uint64_t)2);
-
     WriteLED(LED8, blinkState); /**state */
-    WriteLED(LED6, 0);          /**err */
+    //WriteLED(LED6, 0);          /**err */
 }
 
 /*
@@ -197,7 +274,8 @@ void set_error_indication(int error_num)
 {
     uint64_t time = (TimeMs() % (uint64_t)1000);
     uint8_t ledState = 0;
-    switch (error_num) {
+    switch (error_num)
+    {
     case ERROR_INIT:
         if (time < 500UL)
             ledState = 1;
@@ -258,7 +336,8 @@ void set_error_indication(int error_num)
  */
 void set_tb_digital_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         WriteDIDOPin(TODI, channel - 1, (uint8_t)value);
         break;
@@ -284,7 +363,8 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
 int get_tb_digital_output(int tb_type, int channel)
 {
     int value = 0;
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         value = ReadDIDOPin(FROMDI, channel - 1);
         break;
@@ -315,21 +395,24 @@ int get_tb_digital_output(int tb_type, int channel)
  */
 void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8) {
+        if (channel >= 1 && channel <= 8)
+        {
             WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value);  /**2lines manage */
-            WriteAIHIOPin(TOAI, channel - 1, !(uint8_t)value); /**4line manage */
+            WriteAIHIOPin(TOAI, channel - 1, 0); /**4line manage */
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, !(uint8_t)value);/**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5,  (uint8_t)value);/**2line */
+        if (channel >= 9 && channel <= 10)
+        {
+            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value);  /**2line */
+            WriteAIHIOPin(TOFROMHIO, channel + 3, 0); /**4line */
         }
         break;
     default:
@@ -346,23 +429,26 @@ void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
  */
 void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8) {
+        if (channel >= 1 && channel <= 8)
+        {
             WriteAIHIOPin(TOAI, channel + 7, 0); /**2lines manage */
             WriteAIHIOPin(TOAI, channel - 1, 1); /**4line manage */
             WriteDAC8568Value(channel - 1, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 1);/**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5, 0);/**2line */
-            WriteAD5686Value(channel -9,(uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 9 && channel <= 10)
+        {
+            WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
+            WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
+            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
@@ -378,23 +464,32 @@ void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int  get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
+int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8) {
-            *value_A1 = (int)(AIReadCh(channel - 1) * (int32_t)2500 / (int32_t) 0xff);
-            *value_A2 = (int)(DIGReadCh(channel - 1) * (int32_t)2500 / (int32_t) 0xff);
+        if (channel >= 1 && channel <= 8)
+        {
+            *value_A1 = (int)(AIReadCh(channel - 1) *  2500L / 0xffL);
+            *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {/**对应问题 */
-            *value_A1 = (int)(HIOReadCh(channel - 9) * (int32_t)2500 / (int32_t) 0xff);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * (int32_t)2500 / (int32_t) 0xff);
+        if (channel >= 9 && channel <= 10)
+        {
+            /**对应问题 */
+            *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+        }
+        else if (channel >= 11 && channel <= 12)
+        {
+            *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
         }
         break;
     default:
@@ -418,7 +513,8 @@ int  get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
  */
 void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -426,10 +522,15 @@ void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 1);/**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5, 0);/**2line */
-            WriteAD5686Value(channel -9,(uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 9 && channel <= 10)
+        {
+            WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
+            WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
+            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+        }
+        if (channel >= 11 && channel <= 12)
+        {
+            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
@@ -439,15 +540,17 @@ void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value)
 }
 
 /*
- * Set AI tb stimulation by 4 lines mode.
+ * Set HIO-AO tb stimulation by 4 lines mode.
  * parameters:
  *  channel    1~8
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int  get_tb_ao_output(int tb_type, int channel, int *value_A1, int *value_A2)
+int set_tb_ao_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type) {
+    int ret = 0;
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -455,22 +558,46 @@ int  get_tb_ao_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {/**对应问题 */
-            *value_A1 = (int)(HIOReadCh(channel - 9) * (int32_t)2500 / (int32_t) 0xff);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * (int32_t)2500 / (int32_t) 0xff);
-        }
-        else if(channel >= 11 && channel <= 12)
+        if (channel >= 11 && channel <= 12)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 6) * (int32_t)2500 / (int32_t) 0xff);
-            *value_A2 = (int)(HIOReadCh(channel - 6) * (int32_t)2500 / (int32_t) 0xff);
-
+            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
-    if (*value_A1 < 0 || *value_A2 < 0)
+    return ret;
+}
+
+/*
+ * Set AI tb stimulation by 4 lines mode.
+ * parameters:
+ *  channel    1~8
+ *  value_A1   voltage at A1 point, in units of mV
+ *  value_A2   voltage at A2 point, in units of mV
+ */
+int get_tb_ao_output(int tb_type, int channel, int *value)
+{
+    switch (tb_type)
+    {
+    case 1: /**DI */
+        break;
+    case 2: /**DO */
+        break;
+    case 3: /**AI */
+        break;
+    case 4: /**HIO */
+        if (channel >= 11 && channel <= 12)
+        {
+            *value = (int)(HIOReadCh(channel - 7) * (int32_t)2500 / (int32_t)0xff);
+        }
+        break;
+    default:
+        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+        break;
+    }
+    if (*value < 0)
     {
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         return -1;

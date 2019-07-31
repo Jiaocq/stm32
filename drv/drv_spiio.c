@@ -188,7 +188,7 @@ int SpiioIinit()
         return -1;
     /**init TOFROMHIO IOB0-7 :output, low level to close other dev
  * IOA 0-7 : input , if high level input ,it is high level */
-    WriteAIHIO(WriteReg(TOFROMHIO, IODIRA, 0xff));
+    WriteAIHIO(WriteReg(TOFROMHIO, IODIRA, 0x0f));
     WriteAIHIO(WriteReg(TOFROMHIO, OLATB, 0x00));
     WriteAIHIO(WriteReg(TOFROMHIO, IODIRB, 0x00));
     WriteAIHIO(WriteReg(TOFROMHIO, OLATB, 0x00));
@@ -196,7 +196,7 @@ int SpiioIinit()
         return -1;
     if (0x38 != ReadAIHIO(ReadReg(TOFROMHIO, IOCONB)))
         return -1;
-    if (0xff != ReadAIHIO(ReadReg(TOFROMHIO, IODIRA)))
+    if (0x0f != ReadAIHIO(ReadReg(TOFROMHIO, IODIRA)))
         return -1;
     if (0x00 != ReadAIHIO(ReadReg(TOFROMHIO, IODIRB)))
         return -1;

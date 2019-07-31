@@ -1,6 +1,8 @@
 #include "gpio.h"
 #include "main.h"
 
+
+/**return : 0,1 for releset or press */
 int getStartKey()
 {
 
