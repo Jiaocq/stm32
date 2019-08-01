@@ -590,7 +590,7 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int set_tb_hio_ao_stimulation(int tb_type, int channel, int value)
+int set_tb_ao_stimulation(int tb_type, int channel, int value)
 {
     int ret = 0;
     switch (tb_type)
@@ -621,7 +621,7 @@ int set_tb_hio_ao_stimulation(int tb_type, int channel, int value)
  *  value_A1   voltage at A1 point, in units of mV
  *  value_A2   voltage at A2 point, in units of mV
  */
-int get_tb_hio_ao_output(int tb_type, int channel, int *value)
+int get_tb_ao_output(int tb_type, int channel, int *value)
 {
     switch (tb_type)
     {

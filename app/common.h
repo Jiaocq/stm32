@@ -13,6 +13,8 @@
 #define VOLTAGE_TEST_NUM        5
 #define MAX_DI_CHANNEL          15
 #define MAX_AI_CHANNEL          7
+#define MAX_DO_CHANNEL          15
+#define MAX_HIO_CHANNEL         11
 #define STIMULATION_STABLE_TIME 1000
 #define VOLTAGE_FOR_2LINE       1200  // in units of mV
 
@@ -141,6 +143,15 @@ int  get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2);
  *  value   0~2500, in units of mV
  */
 void set_tb_ao_4lines_stimulation(int tb_type, int channel, int value);
+
+/*
+ * Set HIO-AO tb stimulation by 4 lines mode.
+ * parameters:
+ *  channel    1~8
+ *  value_A1   voltage at A1 point, in units of mV
+ *  value_A2   voltage at A2 point, in units of mV
+ */
+int set_tb_ao_stimulation(int tb_type, int channel, int value);
 
 /*
  * Set AI tb stimulation by 4 lines mode.
