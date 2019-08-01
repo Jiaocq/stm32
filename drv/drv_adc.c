@@ -32,10 +32,10 @@ static int32_t ReadAIAdc(uint32_t sendData)
 {
     uint32_t recvData = 0;
     uint32_t recvReg = 0;
-    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&AIAdcSPIBUS, (uint8_t *)&recvData, AIAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&AIAdcSPIBUS, (uint8_t *)&recvReg, AIAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
     if (sendData ^ recvReg)
     {
@@ -47,9 +47,9 @@ static int32_t ReadAIAdc(uint32_t sendData)
 
 static uint16_t ReqAIAdc(uint32_t sendData)
 {
-    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&AIAdcSPIBUS, (uint8_t *)&sendData, AIAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return 0;
 }
@@ -58,10 +58,10 @@ static uint16_t ReadDIGAdc(uint32_t sendData)
 {
     uint32_t recvData = 0;
     uint32_t recvReg = 0;
-    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&DIGAdcSPIBUS, (uint8_t *)&recvData, DIGAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&DIGAdcSPIBUS, (uint8_t *)&recvReg, DIGAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
     if (sendData ^ recvReg)
     {
@@ -73,9 +73,9 @@ static uint16_t ReadDIGAdc(uint32_t sendData)
 
 static uint16_t ReqDIGAdc(uint32_t sendData)
 {
-    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&DIGAdcSPIBUS, (uint8_t *)&sendData, DIGAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
 
     return 0;
@@ -85,10 +85,10 @@ static uint16_t ReadHIOAdc(uint32_t sendData)
 {
     uint32_t recvData = 0;
     uint32_t recvReg = 0;
-    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&HIOAdcSPIBUS, (uint8_t *)&recvData, HIOAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&HIOAdcSPIBUS, (uint8_t *)&recvReg, HIOAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
     if (sendData ^ recvReg)
     {
@@ -100,9 +100,9 @@ static uint16_t ReadHIOAdc(uint32_t sendData)
 
 static uint16_t ReqHIOAdc(uint32_t sendData)
 {
-    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, 0);
+    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&HIOAdcSPIBUS, (uint8_t *)&sendData, HIOAdcFrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, 1);
+    HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return 0;
 }

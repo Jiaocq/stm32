@@ -26,18 +26,18 @@
 
 static int32_t WriteDAC8568(uint32_t sendData)
 {
-    HAL_GPIO_WritePin(SPI3_DAC_AICS_GPIO_Port, SPI3_DAC_AICS_Pin, 0);
+    HAL_GPIO_WritePin(SPI3_DAC_AICS_GPIO_Port, SPI3_DAC_AICS_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&SPIBUS, (uint8_t *)&sendData, DAC8568FrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(SPI3_DAC_AICS_GPIO_Port, SPI3_DAC_AICS_Pin, 1);
+    HAL_GPIO_WritePin(SPI3_DAC_AICS_GPIO_Port, SPI3_DAC_AICS_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return 0;
 }
 
 static int32_t WriteAD5686(uint32_t sendData)
 {
-    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 0);
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&SPIBUS, (uint8_t *)&sendData, AD5686FrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 1);
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_SET);
     DelayUs(5);
 
     return 0;
@@ -46,9 +46,9 @@ static int32_t WriteAD5686(uint32_t sendData)
 static int32_t ReadbackAD5686(uint32_t sendData)
 {
     uint32_t recvData = 0;
-    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 0);
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&SPIBUS, (uint8_t *)&recvData, AD5686FrameLength, TIMEOUT);
-    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, 1);
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_SET);
     DelayUs(5);
     if (recvData ^ sendData)
     {
