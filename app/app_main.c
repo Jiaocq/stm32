@@ -1,8 +1,10 @@
 #include "common.h"
 
+extern  int cunit();
 int main(void)
 {
-  manage_entry();
+  cunit();
+  // manage_entry();
  
   while (1)
   {

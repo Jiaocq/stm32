@@ -29,6 +29,7 @@ int hw_init()
     LEDInit();
     ret -= SpiioDeinit();
     WriteLED(LED5, 1); /**power led on*/
+    DEBUG("hard init result : %d\r\n",ret);
     return ret;
 }
 
@@ -187,68 +188,61 @@ void set_module_state(int module, int state)
 void set_module_testing_result(int module, int *result)
 {
     uint8_t blinkState = 0;
+    uint32_t ledNum = 0;
     blinkState = (uint8_t)(TimeMs() / (uint64_t)50 % (uint64_t)2);
     switch (module)
     {
     case 1:
-        WriteLED(LED33, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
-        WriteLED(LED32, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
-        WriteLED(LED31, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
-        WriteLED(LED30, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
-        WriteLED(LED29, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
-        WriteLED(LED28, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
-        WriteLED(LED27, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
-        WriteLED(LED26, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
-        WriteLED(LED25, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
-        WriteLED(LED24, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
-        WriteLED(LED23, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
-        WriteLED(LED22, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
-        WriteLED(LED21, *(result + 0xc) < 0 ? blinkState : *(result + 0xc));
-        WriteLED(LED20, *(result + 0xd) < 0 ? blinkState : *(result + 0xd));
-        WriteLED(LED19, *(result + 0xe) < 0 ? blinkState : *(result + 0xe));
-        WriteLED(LED18, *(result + 0xf) < 0 ? blinkState : *(result + 0xf));
+        for (ledNum = 16; ledNum--;)
+        {
+            if (ledNum <= 15)
+                WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+            if (ledNum <= 15)
+                WriteLED(LEDDO(ledNum), 0);
+            if (ledNum <= 8)
+                WriteLED(LEDAI(ledNum), 0);
+            if (ledNum <= 12)
+                WriteLED(LEDHIO(ledNum), 0);
+        }
         break;
     case 2:
-        WriteLED(LED49, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
-        WriteLED(LED48, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
-        WriteLED(LED47, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
-        WriteLED(LED46, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
-        WriteLED(LED45, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
-        WriteLED(LED44, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
-        WriteLED(LED43, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
-        WriteLED(LED42, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
-        WriteLED(LED41, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
-        WriteLED(LED40, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
-        WriteLED(LED39, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
-        WriteLED(LED38, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
-        WriteLED(LED37, *(result + 0xc) < 0 ? blinkState : *(result + 0xc));
-        WriteLED(LED36, *(result + 0xd) < 0 ? blinkState : *(result + 0xd));
-        WriteLED(LED35, *(result + 0xe) < 0 ? blinkState : *(result + 0xe));
-        WriteLED(LED34, *(result + 0xf) < 0 ? blinkState : *(result + 0xf));
+        for (ledNum = 16; ledNum--;)
+        {
+            if (ledNum <= 15)
+                WriteLED(LEDDI(ledNum), 0);
+            if (ledNum <= 15)
+                WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+            if (ledNum <= 8)
+                WriteLED(LEDAI(ledNum), 0);
+            if (ledNum <= 12)
+                WriteLED(LEDHIO(ledNum), 0);
+        }
         break;
     case 4:
-        WriteLED(LED57, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
-        WriteLED(LED56, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
-        WriteLED(LED55, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
-        WriteLED(LED54, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
-        WriteLED(LED53, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
-        WriteLED(LED52, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
-        WriteLED(LED51, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
-        WriteLED(LED50, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
+        for (ledNum = 16; ledNum--;)
+        {
+            if (ledNum <= 15)
+                WriteLED(LEDDI(ledNum), 0);
+            if (ledNum <= 15)
+                WriteLED(LEDDO(ledNum), 0);
+            if (ledNum <= 8)
+                WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+            if (ledNum <= 12)
+                WriteLED(LEDHIO(ledNum), 0);
+        }
         break;
     case 8:
-        WriteLED(LED69, *(result + 0x0) < 0 ? blinkState : *(result + 0x0));
-        WriteLED(LED68, *(result + 0x1) < 0 ? blinkState : *(result + 0x1));
-        WriteLED(LED67, *(result + 0x2) < 0 ? blinkState : *(result + 0x2));
-        WriteLED(LED66, *(result + 0x3) < 0 ? blinkState : *(result + 0x3));
-        WriteLED(LED65, *(result + 0x4) < 0 ? blinkState : *(result + 0x4));
-        WriteLED(LED64, *(result + 0x5) < 0 ? blinkState : *(result + 0x5));
-        WriteLED(LED63, *(result + 0x6) < 0 ? blinkState : *(result + 0x6));
-        WriteLED(LED62, *(result + 0x7) < 0 ? blinkState : *(result + 0x7));
-        WriteLED(LED61, *(result + 0x8) < 0 ? blinkState : *(result + 0x8));
-        WriteLED(LED60, *(result + 0x9) < 0 ? blinkState : *(result + 0x9));
-        WriteLED(LED59, *(result + 0xa) < 0 ? blinkState : *(result + 0xa));
-        WriteLED(LED58, *(result + 0xb) < 0 ? blinkState : *(result + 0xb));
+        for (ledNum = 16; ledNum--;)
+        {
+            if (ledNum <= 15)
+                WriteLED(LEDDI(ledNum), 0);
+            if (ledNum <= 15)
+                WriteLED(LEDDO(ledNum), 0);
+            if (ledNum <= 8)
+                WriteLED(LEDAI(ledNum), 0);
+            if (ledNum <= 12)
+                WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+        }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
@@ -262,8 +256,7 @@ void set_module_testing_result(int module, int *result)
 void set_normal_run_flag()
 {
     uint8_t blinkState = (uint8_t)(TimeMs() / (uint64_t)500 % (uint64_t)2);
-    WriteLED(LED8, blinkState); /**state */
-    //WriteLED(LED6, 0);          /**err */
+    WriteLED(LED7, blinkState); /**state */
 }
 
 /*
@@ -338,8 +331,8 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
 {
     switch (tb_type)
     {
-    case 1: /**DI */
-        WriteDIDOPin(TODI, 16 - channel, (uint8_t)value);
+    case 1:                                                /**DI */
+        WriteDIDOPin(TODI, 16 - channel, !(uint8_t)value); /**output 0 will get 1 */
         break;
     case 2: /**DO */
         WriteDIDOPin(TODO, channel - 1, (uint8_t)value);
@@ -348,7 +341,7 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
         break;
     case 4: /**HIO */
         if (channel <= 8 && channel >= 1)
-            WriteAIHIOPin(TOFROMHIO, channel + 3, ((uint8_t)value));
+            WriteAIHIOPin(TOFROMHIO, channel + 3, !((uint8_t)value)); /**output 0 will get 1 */
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
@@ -404,15 +397,15 @@ void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            WriteAIHIOPin(TOAI, channel - 1, 0); /**4line manage */
-            WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value);  /**2lines manage */
+            WriteAIHIOPin(TOAI, channel - 1, 0);              /**4line manage */
+            WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value); /**2lines manage */
         }
         break;
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 0); /**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value);  /**2line */
+            WriteAIHIOPin(TOFROMHIO, channel + 3, 0);              /**4line */
+            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value); /**2line */
         }
         break;
     default:
@@ -475,7 +468,7 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            *value_A1 = (int)(AIReadCh(channel - 1) *  2500L / 0xffL);
+            *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
             *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
@@ -556,7 +549,7 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            *value_A1 = (int)(AIReadCh(channel - 1) *  2500L / 0xffL);
+            *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
             *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
