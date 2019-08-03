@@ -3,6 +3,7 @@ C_DEFS += -DUSE_HAL_DRIVER
 C_DEFS += -DSTM32F427xx 
 C_DEFS += -DUSE_HAL_DRIVER 
 C_DEFS += -DARM_MATH_CM4 
+C_DEFS += -DLITTLE_ENDIAN
 
 
 ######################################

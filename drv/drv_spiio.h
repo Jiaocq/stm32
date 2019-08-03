@@ -24,12 +24,6 @@ int WriteAIHIOPin(uint8_t devId, uint8_t pinId, uint8_t pinState);
  */
 int WriteDIDOPin(uint8_t devId, uint8_t pinId, uint8_t pinState);
 
-/**init all mcp23s17 */
-int SpiioIinit();
-
-/**reaet all mcp23s17 */
-int SpiioDeinit();
-
 /**read a pin
  * devId : FROMHIO  TOFROMHIO TOAI
  * pinId : 0-15

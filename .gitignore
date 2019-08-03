@@ -2,9 +2,8 @@ bin/*
 cscope.*
 Makefile
 tags
-.vscode/
 *.swp
-
-
+.mxproject
+.vscode
 
 

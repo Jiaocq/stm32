@@ -331,7 +331,7 @@ int cunit()
     // }
 
     /** spi io*/
-    DEBUG("spiio : %d",SpiioIinit());
+    // DEBUG("spiio : %d",SpiioIinit());
     while (0)
     {
         ReadDIDOPin(FROMDI, 0);

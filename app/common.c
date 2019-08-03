@@ -27,7 +27,6 @@ int hw_init()
     ret -= AD5686Init();
     ret -= DAC8568Init();
     LEDInit();
-    ret -= SpiioDeinit();
     WriteLED(LED5, 1); /**power led on*/
     DEBUG("hard init result : %d\r\n",ret);
     return ret;
