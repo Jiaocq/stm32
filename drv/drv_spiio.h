@@ -4,7 +4,7 @@
 /** cs = MCU_SPI2_CS_DIDO_MCP23S17 */
 #define FROMDO 0x0 /**u17 pins input from DO : 0xffff , pin 0-15 to DO 0-15 , DO high level to pins high level */
 #define TODI 0x4   /**u18 pins out   to   DI : 0x0000 ,    pin 0-15 to DI 15-0 , PINS low level to connect two point */
-#define TODO 0x5   /**u21 pins out   to   DO : 0x0000 ,   pin 0-15 to DO 0-15 ， pins low level to connect 10k24v */
+#define TODO 0x2   /**u21 pins out   to   DO : 0x0000 ,   pin 0-15 to DO 0-15 ， pins low level to connect 10k24v */
 #define FROMDI 0x3 /**u20 pins input from DI : 0xffff , pin 0-15 to DI 0-15 , DI high level to pins high level */
 
 /** cs = MCU_SPI2_CS_AIHIO_MCP23S17 */

@@ -24,50 +24,67 @@ int cunit()
     int32_t spicount = 0;
     /**harsware init */
     HardwareInit();
-    uint8_t readData[4]={0xff,0xff,0xff,0xff,};
-    uint8_t sendData[4] = {0x41,0x01,0x00,0x00,};
-    while(0){
-/**recv 0xff */
-    sendData[1] = 0x01;
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(5);
-    HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
-    DelayUs(5);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_Delay(10);
-    DEBUG("recv : %d\r\n",readData[2]);
-    /**recv 0x00 */
-
-    sendData[1] = 0x02;
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(5);
-    HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
-    DelayUs(5);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_Delay(10);
-    DEBUG("recv : %d\r\n",readData[2]);
-    }
+    uint8_t readData[4] = {
+        0xff,
+        0xff,
+        0xff,
+        0xff,
+    };
+    uint8_t sendData[4] = {
+        0x41,
+        0x01,
+        0x00,
+        0x00,
+    };
  
-    while(1){
-/**recv 0xff */
-    sendData[1] = 0x01;
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(5);
-    HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
-    DelayUs(5);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_Delay(10);
-    DEBUG("recv : %d\r\n",readData[2]);
-    /**recv 0x00 */
+    while (0)
+    {
+        /**recv 0xff */
+        sendData[1] = 0x01;
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
+        DelayUs(5);
+        HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
+        DelayUs(5);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_Delay(10);
+        DEBUG("recv : %d\r\n", readData[2]);
+        /**recv 0x00 */
 
-    sendData[1] = 0x02;
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(5);
-    HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
-    DelayUs(5);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_Delay(10);
-    DEBUG("recv : %d\r\n",readData[2]);
+        sendData[1] = 0x02;
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
+        DelayUs(5);
+        HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
+        DelayUs(5);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_Delay(10);
+        DEBUG("recv : %d\r\n", readData[2]);
+    }
+
+    while (0)
+    {
+        /**recv 0xff */
+        sendData[1] = 0x01;
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
+        DelayUs(5);
+        HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
+        DelayUs(5);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_Delay(10);
+        DEBUG("recv : %d\r\n", readData[2]);
+        /**recv 0x00 */
+
+        sendData[1] = 0x02;
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
+        DelayUs(5);
+        HAL_SPI_TransmitReceive(&hspi2, sendData, readData, 3, 1000);
+        DelayUs(5);
+        HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
+        HAL_Delay(10);
+        DEBUG("recv : %d\r\n", readData[2]);
     }
     // hw_init();
     /**debug */
@@ -87,6 +104,12 @@ int cunit()
     // keeptime = TimeUs() - time0;
     // DEBUG("TimeUs = %lu .\r\n",(uint32_t)keeptime);
 
+    while (0)
+    {
+        adcValue[0] = AIReadCh(0);
+        DEBUG("adcvalue = %ld \r\n",adcValue[0]);
+        HAL_Delay(50);
+    }
     /**adc test */
     AIAdcInit();
     DIGAdcInit();
@@ -308,15 +331,16 @@ int cunit()
     // }
 
     /** spi io*/
-    SpiioIinit();
-    while(1){
-    ReadDIDOPin(FROMDI,0);
-    HAL_Delay(10);
+    DEBUG("spiio : %d",SpiioIinit());
+    while (0)
+    {
+        ReadDIDOPin(FROMDI, 0);
+        HAL_Delay(10);
     }
     /**write 0 */
     uint32_t u32t = 0x12345678UL;
-    uint8_t * u8t =(uint8_t *)&u32t; 
-    uint8_t aaa[4]={*(u8t+0),*(u8t+1),*(u8t+2),*(u8t+3)};
+    uint8_t *u8t = (uint8_t *)&u32t;
+    uint8_t aaa[4] = {*(u8t + 0), *(u8t + 1), *(u8t + 2), *(u8t + 3)};
     for (spicount = 16; spicount--;)
     {
         WriteDIDOPin(TODI, spicount, 0);

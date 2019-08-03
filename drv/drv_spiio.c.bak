@@ -8,7 +8,7 @@
 #define TIMEOUT 1000 /*ms */
 #define FrameLength 3
 
-#define ReadReg(devId, regId) (devId << 1 | 0x41UL << 0 | regId << 8)
+#define ReadReg(devId, regId)        (devId << 1 | 0x41UL << 0 | regId << 8)
 #define WriteReg(devId, regId, data) (devId << 1 | 0x40UL << 0 | regId << 8 | data << 16)
 /* register address*/
 #define IODIRA 0x00U /* I/O DIRECTION REGISTER: 1-input, 0-output*/
@@ -35,40 +35,34 @@
 #define OLATB 0x15U
 
 /**init status */
-static volatile int initStatus = 0;
+static int initStatus = 0;
 
 static uint8_t ReadDIDO(uint32_t sendData)
 {
-    uint8_t readData[4];
+    uint32_t readData = 0;
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, readData, FrameLength, TIMEOUT);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, (uint8_t *)&readData, FrameLength, TIMEOUT);
     DelayUs(5);
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
-    return readData[2];
+    return (uint8_t)((0xffUL) & (readData >> 8));
 }
 
 static uint8_t ReadAIHIO(uint32_t sendData)
 {
-    uint8_t readData[4];
+    uint32_t readData = 0;
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, readData, FrameLength, TIMEOUT);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, (uint8_t *)&readData, FrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
-    return readData[2];
+    return (uint8_t)((0xffUL) & (readData >> 8));
 }
 
 static int32_t WriteDIDO(uint32_t sendData)
 {
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&IOSPIBUS, (uint8_t *)&sendData, FrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return 0;
 }
@@ -76,10 +70,8 @@ static int32_t WriteDIDO(uint32_t sendData)
 static uint32_t WriteAIHIO(uint32_t sendData)
 {
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&IOSPIBUS, (uint8_t *)&sendData, FrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return 0;
 }
@@ -109,7 +101,7 @@ int SpiioDeinit()
     /** configure  */
     /**reset all gpio */
     HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port, MCU_SPI2_RESET_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(10);
+    DelayUs(1000);
     HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port, MCU_SPI2_RESET_MCP23S17_Pin, GPIO_PIN_SET);
     /** set DIDO , input mode */
     MCP23S17DIDODeinit(FROMDO);
@@ -130,15 +122,14 @@ int SpiioIinit()
     /** configure  */
     /** reset all gpio */
     SpiioDeinit();
-
     /*init FROMDO in inputmode, but nothing to be done,high to high*/
-    if (0x38 != ReadDIDO(ReadReg(FROMDO, IOCONA)))
+    if (0x38 == ReadDIDO(ReadReg(FROMDO, IOCONA)))
         return -1;
-    if (0x38 != ReadDIDO(ReadReg(FROMDO, IOCONB)))
+    if (0x38 == ReadDIDO(ReadReg(FROMDO, IOCONB)))
         return -1;
-    if (0xff != ReadDIDO(ReadReg(FROMDO, IODIRA)))
+    if (0xff == ReadDIDO(ReadReg(FROMDO, IODIRA)))
         return -1;
-    if (0xff != ReadDIDO(ReadReg(FROMDO, IODIRB)))
+    if (0xff == ReadDIDO(ReadReg(FROMDO, IODIRB)))
         return -1;
     /*init TODI in output mode, and high level to close dev*/
     WriteDIDO(WriteReg(TODI, OLATA, 0xff));
@@ -147,18 +138,18 @@ int SpiioIinit()
     WriteDIDO(WriteReg(TODI, IODIRB, 0x00));
     WriteDIDO(WriteReg(TODI, OLATA, 0xff));
     WriteDIDO(WriteReg(TODI, OLATB, 0xff));
-    if (0x38 != ReadDIDO(ReadReg(TODI, IOCONA)))
+    if (0x38 == ReadDIDO(ReadReg(TODI, IOCONA)))
         return -1;
-    if (0x38 != ReadDIDO(ReadReg(TODI, IOCONB)))
+    if (0x38 == ReadDIDO(ReadReg(TODI, IOCONB)))
         return -1;
-    if (0x00 != ReadDIDO(ReadReg(TODI, IODIRA)))
+    if (0x00 == ReadDIDO(ReadReg(TODI, IODIRA)))
         return -1;
-    if (0x00 != ReadDIDO(ReadReg(TODI, IODIRB)))
+    if (0x00 == ReadDIDO(ReadReg(TODI, IODIRB)))
         return -1;
-    if (0xff != ReadDIDO(ReadReg(TODI, OLATA)))
-        return -1;
-    if (0xff != ReadDIDO(ReadReg(TODI, OLATB)))
-        return -1;
+    if (0xff == ReadDIDO(ReadReg(TODI, OLATA)))
+        return 0;
+    if (0xff == ReadDIDO(ReadReg(TODI, OLATB)))
+        return 0;
     /*init TODO  in output mode, and high level to close */
     WriteDIDO(WriteReg(TODO, OLATA, 0xff));
     WriteDIDO(WriteReg(TODO, OLATB, 0xff));
@@ -166,7 +157,6 @@ int SpiioIinit()
     WriteDIDO(WriteReg(TODO, IODIRB, 0x00));
     WriteDIDO(WriteReg(TODO, OLATA, 0xff));
     WriteDIDO(WriteReg(TODO, OLATB, 0xff));
- 
     if (0x38 != ReadDIDO(ReadReg(TODO, IOCONA)))
         return -1;
     if (0x38 != ReadDIDO(ReadReg(TODO, IOCONB)))
@@ -200,7 +190,7 @@ int SpiioIinit()
     /**init TOFROMHIO IOB0-7 :output, low level to close other dev
     * IOA 0-7 : input , if high level input ,it is high level */
     WriteAIHIO(WriteReg(TOFROMHIO, IODIRA, 0x0f));
-    WriteAIHIO(WriteReg(TOFROMHIO, OLATA, 0x00));
+    WriteAIHIO(WriteReg(TOFROMHIO, OLATB, 0x00));
     WriteAIHIO(WriteReg(TOFROMHIO, IODIRB, 0x00));
     WriteAIHIO(WriteReg(TOFROMHIO, OLATB, 0x00));
     if (0x38 != ReadAIHIO(ReadReg(TOFROMHIO, IOCONA)))
