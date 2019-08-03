@@ -14,7 +14,8 @@
 #define DIGAdcFrameLength 2
 #define HIOAdcFrameLength 2
 
-#define AD7689ReadCfg(channel) ((0x1UL << 13 | 0x6UL << 10 | channel << 7 | 0x1UL << 6 | 0x7UL << 3 | 0x1UL << 1) << 2) /**channel 0-7 */
+#define __AD7689ReadCfg(channel) ((0x1UL << 13 | 0x6UL << 10 | channel << 7 | 0x1UL << 6 | 0x7UL << 3 | 0x1UL << 1) << 2) /**channel 0-7 */
+#define AD7689ReadCfg(channel) (__AD7689ReadCfg(channel) >> 8 | __AD7689ReadCfg(channel) << 8)/**format to big endian channel 0-7 */
 
 struct CFG
 {
@@ -54,7 +55,7 @@ static uint16_t ReqAIAdc(uint32_t sendData)
     return 0;
 }
 
-static uint16_t ReadDIGAdc(uint32_t sendData)
+static int32_t ReadDIGAdc(uint32_t sendData)
 {
     uint32_t recvData = 0;
     uint32_t recvReg = 0;
@@ -81,7 +82,7 @@ static uint16_t ReqDIGAdc(uint32_t sendData)
     return 0;
 }
 
-static uint16_t ReadHIOAdc(uint32_t sendData)
+static int32_t ReadHIOAdc(uint32_t sendData)
 {
     uint32_t recvData = 0;
     uint32_t recvReg = 0;
@@ -111,35 +112,35 @@ static uint16_t ReqHIOAdc(uint32_t sendData)
 int32_t AIAdcInit()
 {
     int ret = 0;
-           ReqAIAdc(AD7689ReadCfg(0));
+    ReqAIAdc(AD7689ReadCfg(0));
     ret = ReadAIAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(1));
+    ReqAIAdc(AD7689ReadCfg(1));
     ret = ReadAIAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(2));
+    ReqAIAdc(AD7689ReadCfg(2));
     ret = ReadAIAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(3));
+    ReqAIAdc(AD7689ReadCfg(3));
     ret = ReadAIAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(4));
+    ReqAIAdc(AD7689ReadCfg(4));
     ret = ReadAIAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(5));
+    ReqAIAdc(AD7689ReadCfg(5));
     ret = ReadAIAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(6));
+    ReqAIAdc(AD7689ReadCfg(6));
     ret = ReadAIAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
-           ReqAIAdc(AD7689ReadCfg(7));
+    ReqAIAdc(AD7689ReadCfg(7));
     ret = ReadAIAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;
@@ -150,35 +151,35 @@ int32_t AIAdcInit()
 int32_t DIGAdcInit()
 {
     int ret = 0;
-           ReqDIGAdc(AD7689ReadCfg(0));
+    ReqDIGAdc(AD7689ReadCfg(0));
     ret = ReadDIGAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(1));
+    ReqDIGAdc(AD7689ReadCfg(1));
     ret = ReadDIGAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(2));
+    ReqDIGAdc(AD7689ReadCfg(2));
     ret = ReadDIGAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(3));
+    ReqDIGAdc(AD7689ReadCfg(3));
     ret = ReadDIGAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(4));
+    ReqDIGAdc(AD7689ReadCfg(4));
     ret = ReadDIGAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(5));
+    ReqDIGAdc(AD7689ReadCfg(5));
     ret = ReadDIGAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(6));
+    ReqDIGAdc(AD7689ReadCfg(6));
     ret = ReadDIGAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
-           ReqDIGAdc(AD7689ReadCfg(7));
+    ReqDIGAdc(AD7689ReadCfg(7));
     ret = ReadDIGAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;
@@ -189,35 +190,35 @@ int32_t DIGAdcInit()
 int32_t HIOAdcInit()
 {
     int ret = 0;
-       ReqHIOAdc(AD7689ReadCfg(0));
+    ReqHIOAdc(AD7689ReadCfg(0));
     ret = ReadHIOAdc(AD7689ReadCfg(0));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(1));
+    ReqHIOAdc(AD7689ReadCfg(1));
     ret = ReadHIOAdc(AD7689ReadCfg(1));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(2));
+    ReqHIOAdc(AD7689ReadCfg(2));
     ret = ReadHIOAdc(AD7689ReadCfg(2));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(3));
+    ReqHIOAdc(AD7689ReadCfg(3));
     ret = ReadHIOAdc(AD7689ReadCfg(3));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(4));
+    ReqHIOAdc(AD7689ReadCfg(4));
     ret = ReadHIOAdc(AD7689ReadCfg(4));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(5));
+    ReqHIOAdc(AD7689ReadCfg(5));
     ret = ReadHIOAdc(AD7689ReadCfg(5));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(6));
+    ReqHIOAdc(AD7689ReadCfg(6));
     ret = ReadHIOAdc(AD7689ReadCfg(6));
     if (0 > ret)
         return ret;
-           ReqHIOAdc(AD7689ReadCfg(7));
+    ReqHIOAdc(AD7689ReadCfg(7));
     ret = ReadHIOAdc(AD7689ReadCfg(7));
     if (0 > ret)
         return ret;

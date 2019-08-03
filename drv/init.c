@@ -21,5 +21,8 @@ int HardwareInit()
     MX_SPI4_Init();
     MX_SPI5_Init();
     MX_UART5_Init();
+    HAL_TIM_Base_Start_IT(&htim2);
+    HAL_TIM_Base_Start_IT(&htim5);
+
     return 0;
 }

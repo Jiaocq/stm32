@@ -226,7 +226,12 @@ void set_module_testing_result(int module, int *result)
             if (ledNum <= 15)
                 WriteLED(LEDDO(ledNum), 0);
             if (ledNum <= 8)
-                WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                if(ledNum == 2) 
+                    WriteLED(3, *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                if(ledNum == 2) 
+                    WriteLED(2, *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                else
+                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
             if (ledNum <= 12)
                 WriteLED(LEDHIO(ledNum), 0);
         }

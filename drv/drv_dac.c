@@ -5,21 +5,21 @@
 #define SPIBUS hspi3
 #define TIMEOUT 1000 /*ms */
 
-#define DAC8568ClrZerio (0x5UL << 24)
-#define DAC8568IgnExtClr ((0x5UL << 24) | (0x3UL))
-#define DAC8568Rst (0x7UL << 24)
-#define DAC8568WrtReg(channel, data) (0x3UL << 24 | channel << 20 | data << 4) /*channel 0-7, data 0-0xffff */
-#define DAC8568WrtAllReg(data) (0x3UL << 24 | 0xfUL << 20 | data << 4)
-#define DAC8568PwrDwnAll (0x4UL << 24 | 0x0UL << 8 | 0xffUL)
-#define DAC8568PwrUpAll (0x4UL << 24 | 0x2UL << 8 | 0xffUL)
-#define DAC8568PwrDwnItnRef (0x9UL << 24 | 0xaUL << 17)
+#define DAC8568ClrZerio (0x5UL << 8 * 0)
+#define DAC8568IgnExtClr ((0x5UL << 8 * 0) | (0x3UL) << 8*3)
+#define DAC8568Rst (0x7UL << 8 * 0)
+#define DAC8568WrtReg(channel, data) (0x3UL << 8 * 0 | channel << 8 * 1 + 4 | data << 8 * 3 + 4) /*channel 0-7, data 0-0xffff */
+#define DAC8568WrtAllReg(data) (0x3UL << 8 * 0 | 0xfUL << 8 * 1 + 4 | data << 8 * 3 + 4)
+#define DAC8568PwrDwnAll (0x4UL << 8 * 0 | 0x0UL << 8 * 2 | 0xffUL << 8 * 3)
+#define DAC8568PwrUpAll (0x4UL << 8 * 0 | 0x2UL << 8 * 2 | 0xffUL << 8 * 3)
+#define DAC8568PwrDwnItnRef (0x9UL << 8 * 0 | 0xaUL << 8 * 1 + 1)
 #define DAC8568FrameLength 4 /*byte */
 
-#define AD5686Rst ((0x6UL << 20) << 8)
-#define AD5686WrtReg(channel, data) ((0x3UL << 20 | channel << 16 | data << 4) << 8) /*channel DCBA */
-#define AD5686PwrDwnAll ((0x4UL << 20 | 0xaaUL) << 8)
-#define AD5686PwrUpAll ((0x4UL << 20 | 0x00UL) << 8)
-#define AD5686ReadBack ((0x9UL << 20) << 8)
+#define AD5686Rst (0x6UL << 8 * 0 + 4)
+#define AD5686WrtReg(channel, data) (0x3UL << 8 * 0 + 4 | channel << 8 * 0 | data << 8 * 2 + 4) /*channel DCBA */
+#define AD5686PwrDwnAll (0x4UL << 8 * 0 + 4 | 0xaaUL << 8 * 2)
+#define AD5686PwrUpAll (0x4UL << 8 * 0 + 4 | 0x00UL << 8 * 2)
+#define AD5686ReadBack (0x9UL << 8 * 0 + 4)
 #define AD5686FrameLength 3 /*byte */
 // #define AD5686PwrDwn(channel)       ((0x4UL<< 20 | 0x2UL << (2*channel)) << 8) /*channel :0-3 */
 // #define AD5686PwrUp(channel)        ((0x4UL<< 20 | 0x0UL << (2*channel)) << 8) /*channel :0-3 */

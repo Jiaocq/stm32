@@ -60,8 +60,8 @@
 #define LED52 (0x2UL | 0x1UL << 9)
 #define LED53 (0x3UL | 0x1UL << 9)
 #define LED54 (0x4UL | 0x1UL << 9)
-#define LED55 (0x5UL | 0x1UL << 9)
-#define LED56 (0x6UL | 0x1UL << 9)
+#define LED55 (0x6UL | 0x1UL << 9)
+#define LED56 (0x5UL | 0x1UL << 9)
 #define LED57 (0x7UL | 0x1UL << 9)
 /**HIO led: 58-69: p12-p1 */
 #define LEDHIO(__pin) (__pin < 4 ? (0x7UL - __pin) | 0x1UL << 11 : (0xbUL - __pin) | 0x1UL << 7)

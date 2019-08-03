@@ -139,7 +139,7 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = MCU_MODE_SWITCH_Pin|MCU_TEST_START_Pin|MCU_MAIN_DITEST_Pin|MCU_MAIN_DOTEST_Pin 
                           |MCU_MAIN_AITEST_Pin|MCU_MAIN_HIOTEST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PDPin PDPin PDPin */

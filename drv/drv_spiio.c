@@ -8,8 +8,8 @@
 #define TIMEOUT 1000 /*ms */
 #define FrameLength 3
 
-#define ReadReg(devId, regId) (0x4UL << 28 | devId << 25 | 0x01UL << 24 | regId << 16)
-#define WriteReg(devId, regId, data) (0x4UL << 28 | devId << 25 | 0x00UL << 24 | regId << 16 | data << 8)
+#define ReadReg(devId, regId)        (devId << 1 | 0x41UL << 0 | regId << 8)
+#define WriteReg(devId, regId, data) (devId << 1 | 0x40UL << 0 | regId << 8 | data << 16)
 /* register address*/
 #define IODIRA 0x00U /* I/O DIRECTION REGISTER: 1-input, 0-output*/
 #define IODIRB 0x01U
@@ -41,7 +41,8 @@ static uint8_t ReadDIDO(uint32_t sendData)
 {
     uint32_t readData = 0;
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&readData, (uint8_t *)&sendData, FrameLength, TIMEOUT);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, (uint8_t *)&readData, FrameLength, TIMEOUT);
+    DelayUs(5);
     HAL_GPIO_WritePin(MCU_SPI2_CS_DIDO_MCP23S17_GPIO_Port, MCU_SPI2_CS_DIDO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return (uint8_t)((0xffUL) & (readData >> 8));
@@ -51,7 +52,7 @@ static uint8_t ReadAIHIO(uint32_t sendData)
 {
     uint32_t readData = 0;
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_RESET);
-    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&readData, (uint8_t *)&sendData, FrameLength, TIMEOUT);
+    HAL_SPI_TransmitReceive(&IOSPIBUS, (uint8_t *)&sendData, (uint8_t *)&readData, FrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_SPI2_CS_AIHIO_MCP23S17_GPIO_Port, MCU_SPI2_CS_AIHIO_MCP23S17_Pin, GPIO_PIN_SET);
     DelayUs(5);
     return (uint8_t)((0xffUL) & (readData >> 8));
@@ -100,7 +101,7 @@ int SpiioDeinit()
     /** configure  */
     /**reset all gpio */
     HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port, MCU_SPI2_RESET_MCP23S17_Pin, GPIO_PIN_RESET);
-    DelayUs(5);
+    DelayUs(1000);
     HAL_GPIO_WritePin(MCU_SPI2_RESET_MCP23S17_GPIO_Port, MCU_SPI2_RESET_MCP23S17_Pin, GPIO_PIN_SET);
     /** set DIDO , input mode */
     MCP23S17DIDODeinit(FROMDO);
