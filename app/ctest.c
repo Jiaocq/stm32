@@ -16,7 +16,7 @@ int cunit()
 {
     uint64_t time0 = 0;
     uint64_t keeptime = 0;
-    int32_t adcValue[3];
+    int32_t adcValue[30];
     int32_t channel = 0;
     int32_t key;
     int32_t a = 0;
@@ -24,6 +24,8 @@ int cunit()
     int32_t spicount = 0;
     /**harsware init */
     HardwareInit();
+    LEDInit();
+    WriteLED(LED5, 1); /**power led on*/
     uint8_t readData[4] = {
         0xff,
         0xff,
@@ -36,7 +38,7 @@ int cunit()
         0x00,
         0x00,
     };
- 
+
     while (0)
     {
         /**recv 0xff */
@@ -103,33 +105,74 @@ int cunit()
     // HAL_Delay(100);
     // keeptime = TimeUs() - time0;
     // DEBUG("TimeUs = %lu .\r\n",(uint32_t)keeptime);
+    while (0)
+    {
+        AIAdcInit();
+        adcValue[0] = AIReadCh(0);
+        adcValue[1] = AIReadCh(1);
+        adcValue[2] = AIReadCh(2);
+        adcValue[3] = AIReadCh(3);
+        adcValue[4] = AIReadCh(4);
+        adcValue[5] = AIReadCh(5);
+        adcValue[6] = AIReadCh(6);
+        adcValue[7] = AIReadCh(7);
+        DEBUG("adcvalue = \t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t \r\n",
+              adcValue[0], adcValue[1], adcValue[2], adcValue[3], adcValue[4], adcValue[5], adcValue[6], adcValue[7]);
+        HAL_Delay(50);
+    }
+    while (0)/**u90 */
+    {
+        // AIAdcInit();
+        DIGAdcInit();
+        adcValue[0] = DIGReadCh(0);
+        adcValue[1] = DIGReadCh(1);
+        adcValue[2] = DIGReadCh(2);
+        adcValue[3] = DIGReadCh(3);
+        adcValue[4] = DIGReadCh(4);
+        adcValue[5] = DIGReadCh(5);
+        adcValue[6] = DIGReadCh(6);
+        adcValue[7] = DIGReadCh(7);
+        DEBUG("adcvalue = \t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t \r\n",
+              adcValue[0], adcValue[1], adcValue[2], adcValue[3], adcValue[4], adcValue[5], adcValue[6], adcValue[7]);
+        HAL_Delay(50);
+    }
 
     while (0)
     {
-        adcValue[0] = AIReadCh(0);
-        DEBUG("adcvalue = %ld \r\n",adcValue[0]);
+        // AIAdcInit();
+        // DIGAdcInit();
+        HIOAdcInit();
+        adcValue[0] = HIOReadCh(0);
+        adcValue[1] = HIOReadCh(1);
+        adcValue[2] = HIOReadCh(2);
+        adcValue[3] = HIOReadCh(3);
+        adcValue[4] = HIOReadCh(4);
+        adcValue[5] = HIOReadCh(5);
+        adcValue[6] = HIOReadCh(6);
+        adcValue[7] = HIOReadCh(7);
+        DEBUG("adcvalue = \t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t \r\n",
+              adcValue[0], adcValue[1], adcValue[2], adcValue[3], adcValue[4], adcValue[5], adcValue[6], adcValue[7]);
         HAL_Delay(50);
-    }
-    /**adc test */
-    AIAdcInit();
-    DIGAdcInit();
-    HIOAdcInit();
-    for (channel = 8; channel;)
-    {
-        channel--;
-        adcValue[0] = AIReadCh(channel);
-        adcValue[1] = HIOReadCh(channel);
-        adcValue[2] = DIGReadCh(channel);
-        DEBUG("adcvalue = %d\t%d\t%d\r\n", adcValue[0], adcValue[1], adcValue[2]);
     }
 
     /**ad5686 */
-    AD5686Init();
+        AD5686Init();
+    for(;;)
+    {
+        WriteAD5686Value(0, 0xffff);
+        WriteAD5686Value(1, 0xffff);
+        WriteAD5686Value(2, 0xffff);
+        WriteAD5686Value(3, 0xffff);
+        HAL_Delay(50);
+    }
+
+    while(0){
     for (channel = 4; channel;)
     {
         channel--;
         WriteAD5686Value(channel, 0);
         WriteAD5686Value(channel, 0xffff);
+    }
     }
     WriteAD5686AllCh(0);
     WriteAD5686AllCh(0xffff);

@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "common.h": "c",
+        "tim.h": "c",
+        "usart.h": "c",
+        "gpio.h": "c",
+        "spi.h": "c",
+        "drv_uart.h": "c",
+        "drv_io.h": "c",
+        "init.h": "c",
+        "type_traits": "c",
+        "stm32f4xx_hal.h": "c",
+        "drv_adc.h": "c",
+        "drv_dac.h": "c",
+        "drv_key.h": "c",
+        "drv_mode.h": "c",
+        "drv_spiio.h": "c"
+    }
+}
