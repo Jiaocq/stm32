@@ -18,7 +18,7 @@
 #define AD5686Rst (0x60UL << 8 * 0)
 #define AD5686WrtReg(channel, data) (0x3UL << 8 * 0 + 4 | channel << 8 * 0 | data << 8 * 2 + 4) /*channel DCBA */
 #define AD5686PwrDwnAll (0x40UL << 8 * 0 | 0xaaUL << 8 * 2)
-#define AD5686PwrUpAll  (0x40UL << 8 * 0 | 0x00UL << 8 * 2)
+#define AD5686PwrUpAll  (0x40UL << 8 * 0)
 #define AD5686ReadBack (0x9fUL << 8 * 0)
 #define AD5686FrameLength 3 /*byte */
 // #define AD5686PwrDwn(channel)       ((0x4UL<< 20 | 0x2UL << (2*channel)) << 8) /*channel :0-3 */
@@ -47,12 +47,13 @@ static int32_t ReadbackAD5686(uint8_t *sendData)
     uint8_t recvData[4] = {0, 0, 0, 0};
     HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_RESET);
     HAL_SPI_TransmitReceive(&SPIBUS, sendData , recvData, AD5686FrameLength, TIMEOUT);
+    HAL_SPI_TransmitReceive(&SPIBUS, sendData , recvData, AD5686FrameLength, TIMEOUT);
     HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_SET);
     DelayUs(5);
     if (recvData[0] != sendData[0] || recvData[1] != sendData[1] || recvData[2] != sendData[2])
     {
         ERROR("readback AD5686 err\r\n");
-        return -1;
+        return -recvData[0];
     }
     return 0;
 }

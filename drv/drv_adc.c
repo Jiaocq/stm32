@@ -27,7 +27,7 @@ static int32_t ReadAIAdc(uint8_t channel)
     if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
     {
         DEBUG("ReadAIAdc err\r\n");
-        return -1;
+        return -(int32_t)(*((uint16_t *)recvData));
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -55,7 +55,7 @@ static int32_t ReadDIGAdc(uint8_t channel)
     if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
     {
         DEBUG("ReadDIGAdc err\r\n");
-        return -1;
+        return -(int32_t)(*((uint16_t *)recvData));
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -83,7 +83,7 @@ static int32_t ReadHIOAdc(uint8_t channel)
     if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
     {
         DEBUG("ReadHIOAdc err\r\n");
-        return -1;
+        return -(int32_t)(*((uint16_t *)recvData));
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -102,94 +102,26 @@ static uint16_t ReqHIOAdc(uint8_t channel)
 int32_t AIAdcInit()
 {
     int ret = 0;
-    ReqAIAdc(0);
-    ReqAIAdc(0);
-    ret = ReadAIAdc(0);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(1);
-    ReqAIAdc(1);
-    ret = ReadAIAdc(1);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(2);
-    ReqAIAdc(2);
-    ret = ReadAIAdc(2);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(3);
-    ReqAIAdc(3);
-    ret = ReadAIAdc(3);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(4);
-    ReqAIAdc(4);
-    ret = ReadAIAdc(4);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(5);
-    ReqAIAdc(5);
-    ret = ReadAIAdc(5);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(6);
-    ReqAIAdc(6);
-    ret = ReadAIAdc(6);
-    if (0 > ret)
-        return ret;
-    ReqAIAdc(7);
-    ReqAIAdc(7);
-    ret = ReadAIAdc(7);
-    if (0 > ret)
-        return ret;
-    return 0;
+    for(uint8_t channel = 8;channel--;){
+    ReqAIAdc(channel);
+    ReqAIAdc(channel);
+    if (0 > ReadAIAdc(channel))
+        ret -= 1;
+    }
+    return ret;
 }
 
 /**return 0 for no err */
 int32_t DIGAdcInit()
 {
     int ret = 0;
-    ReqDIGAdc(0);
-    ReqDIGAdc(0);
-    ret = ReadDIGAdc(0);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(1);
-    ReqDIGAdc(1);
-    ret = ReadDIGAdc(1);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(1);
-    ReqDIGAdc(1);
-    ret = ReadDIGAdc(2);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(3);
-    ReqDIGAdc(3);
-    ret = ReadDIGAdc(3);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(4);
-    ReqDIGAdc(4);
-    ret = ReadDIGAdc(4);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(5);
-    ReqDIGAdc(5);
-    ret = ReadDIGAdc(5);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(6);
-    ReqDIGAdc(6);
-    ret = ReadDIGAdc(6);
-    if (0 > ret)
-        return ret;
-    ReqDIGAdc(7);
-    ReqDIGAdc(7);
-    ret = ReadDIGAdc(7);
-    if (0 > ret)
-        return ret;
-    return 0;
+    for(uint8_t channel = 8;channel--;){
+    ReqDIGAdc(channel);
+    ReqDIGAdc(channel);
+    if (0 > ReadDIGAdc(channel))
+        ret -= 1;
+    }
+    return ret;
 }
 
 /**return 0 for no err  */
@@ -202,7 +134,7 @@ int32_t HIOAdcInit()
     if (0 > ReadHIOAdc(channel))
         ret -= 1;
     }
-    return 0;
+    return ret;
 }
 
 /**read adc channel
