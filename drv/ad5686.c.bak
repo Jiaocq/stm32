@@ -1,0 +1,220 @@
+/***************************************************************************//**
+ *   @file   AD568X.c
+ *   @brief  Implementation of AD568X Driver.
+ *   @author Dan Nechita
+********************************************************************************
+ * Copyright 2012(c) Analog Devices, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *  - Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  - Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *  - Neither the name of Analog Devices, Inc. nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *  - The use of this software may or may not infringe the patent rights
+ *    of one or more patent holders.  This license does not release you
+ *    from the requirement that you obtain separate licenses from these
+ *    patent holders to use this software.
+ *  - Use of the software either in source or binary form, must be run
+ *    on or directly connected to an Analog Devices Inc. component.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT,
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, INTELLECTUAL PROPERTY RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+********************************************************************************
+*   SVN Revision: 775
+*******************************************************************************/
+
+/******************************************************************************/
+/***************************** Include Files **********************************/
+/******************************************************************************/
+/* AD5686 definitions */
+#include "AD5686.h"
+#include "spi.h"
+#include "drv_time.h"
+
+/******************************************************************************/
+/************************ Variables Definitions *******************************/
+/******************************************************************************/
+uint8_t CurrentPowerRegValue = 0U;
+
+/******************************************************************************/
+/************************ Functions Definitions *******************************/
+/******************************************************************************/
+
+/***************************************************************************//**
+ * @brief Puts the device in a specific power mode.
+ *
+ * @param channel - Channel option.
+ *                  Example: AD568X_ADDR_DAC_A
+ *                           AD568X_ADDR_DAC_B
+ *                           AD568X_ADDR_DAC_C
+ *                           AD568X_ADDR_DAC_D
+ * @param pwrMode - Power mode of the device.
+ *                  Example: AD568X_PD_NORMAL   - Normal operation
+ *                           AD568X_PD_1K       - 1 kOhm to GND
+ *                           AD568X_PD_100K     - 100 kOhm to GND
+ *                           AD568X_PD_3STATE   - Three-state
+ *
+ *
+ * @return none.
+*******************************************************************************/
+void AD568XPowerMode(uint8_t Channel, uint8_t PwrMode)
+{
+    switch (Channel) {
+    case AD568X_ADDR_DAC_A:
+        CurrentPowerRegValue &= ~AD568X_PWR_PDA(0x3U);   /* Clear power bits */
+        CurrentPowerRegValue |= AD568X_PWR_PDA(PwrMode);
+        break;
+
+    case AD568X_ADDR_DAC_B:
+        CurrentPowerRegValue &= ~AD568X_PWR_PDB(0x3U);
+        CurrentPowerRegValue |= AD568X_PWR_PDB(PwrMode);
+        break;
+
+    case AD568X_ADDR_DAC_C:
+        CurrentPowerRegValue &= ~AD568X_PWR_PDC(0x3U);
+        CurrentPowerRegValue |= AD568X_PWR_PDC(PwrMode);
+        break;
+
+    case AD568X_ADDR_DAC_D:
+        CurrentPowerRegValue &= ~AD568X_PWR_PDD(0x3U);
+        CurrentPowerRegValue |= AD568X_PWR_PDD(PwrMode);
+        break;
+
+    default:
+        break;
+    }
+
+    AD568XSetInputRegister(AD568X_CMD(AD568X_CMD_POWERMODE) | CurrentPowerRegValue);
+}
+
+/***************************************************************************//**
+ * @brief Resets the device(clears the outputs to either zero scale or
+          midscale).
+ *
+ * @param resetOutput - The output values of the device at power-up or reset.
+ *                      Example:
+ *                    AD568X_RST_ZERO_SCALE - outputs are cleared to zero scale.
+ *                    AD568X_RST_MIDSCALE   - outputs are cleared to midscale.
+ *
+ * @return none.
+*******************************************************************************/
+void AD568XReset(void)
+{
+    AD568XSetInputRegister(AD568X_CMD(AD568X_CMD_SOFT_RESET));
+}
+
+/***************************************************************************//**
+ * @brief Writes a 24-bit data-word to the Input Register of the device.
+ *
+ * @param registerValue - Value of the register.
+ *
+ * @return none.
+*******************************************************************************/
+void AD568XSetInputRegister(uint32_t RegisterValue)
+{
+    uint8_t RegisterWord[3] = {0U, 0U, 0U};
+    uint8_t recvData[3] ={0,};
+    RegisterWord[0] = (uint8_t)(RegisterValue >> 16U);
+    RegisterWord[1] = (uint8_t)(RegisterValue >> 8U);
+    RegisterWord[2] = (uint8_t)(RegisterValue >> 0U);
+
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(&hspi3, RegisterWord, 3, 1000);
+    // HAL_SPI_TransmitReceive(&hspi3, RegisterWord,recvData, 3, 1000);
+    HAL_GPIO_WritePin(SPI3_DAC_HIOCS_GPIO_Port, SPI3_DAC_HIOCS_Pin, GPIO_PIN_SET);
+    DelayUs(5);
+}
+
+
+/***************************************************************************//**
+ * @brief Write data to the Input Register or to DAC Register of a channel.
+ *
+ * @param writeCommand - The write command option.
+ *                       Example:
+*                        AD568X_CMD_WR_INPUT_N    - Write to Input Register n.
+ *                       AD568X_CMD_WR_UPDT_DAC_N - Write to and update DAC n.
+ * @param channel - Channel option.
+ *                  Example: AD568X_ADDR_DAC_A
+ *                           AD568X_ADDR_DAC_B
+ *                           AD568X_ADDR_DAC_C
+ *                           AD568X_ADDR_DAC_D
+ * @param data -  Data value to write.
+ *
+ * @return none.
+*******************************************************************************/
+void AD568XWriteFunction(uint8_t WriteCommand,
+                         uint8_t Channel,
+                         uint16_t Data)
+{
+    uint8_t ShiftValue = 0U;
+
+    /* Different types of devices have different data bits positions. */
+    ShiftValue = 0U;
+    AD568XSetInputRegister(AD568X_CMD(WriteCommand) |
+                           AD568X_ADDR(Channel) |
+                           (AD568X_DATA_BITS(Data) << ShiftValue));
+}
+
+/***************************************************************************//**
+ * @brief Selects the output voltage of the selected channel.
+ *
+ * @param channel - Channel option.
+ *                  Example: AD568X_ADDR_DAC_A
+ *                           AD568X_ADDR_DAC_B
+ *                           AD568X_ADDR_DAC_C
+ *                           AD568X_ADDR_DAC_D
+ * @param outputVoltage - Output voltage value.
+ * @param vRef - Value of the voltage reference used. If GAIN pin is tied to Vdd
+ *               vRef value is multiplied by 2 inside this function.
+ *
+ * @return The actual value of the output voltage.
+*******************************************************************************/
+void AD568XSetVoltageBIN(uint8_t Channel, uint16_t OutputVoltageValue)
+{
+
+    AD568XWriteFunction(AD568X_CMD_WR_UPDT_DAC_N, Channel, OutputVoltageValue);
+
+}
+
+
+
+
+void ad5686Test(uint16_t value)
+{
+    AD568XReset();
+    AD568XPowerMode(AD568X_ADDR_DAC_ALL, AD568X_PD_NORMAL);
+
+    // AD568XWriteFunction(AD568X_CMD_SET_READBACK, 0x0,0x0);
+    value = 0x0;
+    uint16_t a=1024*4;
+    while (1) {
+        value += a;
+        AD568XSetVoltageBIN(AD568X_ADDR_DAC_A, value);
+        HAL_Delay(250);
+        AD568XSetVoltageBIN(AD568X_ADDR_DAC_B, value);
+        HAL_Delay(250);
+        AD568XSetVoltageBIN(AD568X_ADDR_DAC_D, value);
+        HAL_Delay(250);
+        AD568XSetVoltageBIN(AD568X_ADDR_DAC_C, value);
+        HAL_Delay(250);
+        AD568XSetVoltageBIN(AD568X_ADDR_DAC_ALL, value);
+        // HAL_Delay(50);
+    }
+}

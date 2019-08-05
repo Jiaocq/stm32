@@ -64,7 +64,7 @@
 #define LED56 (0x5UL | 0x1UL << 9)
 #define LED57 (0x7UL | 0x1UL << 9)
 /**HIO led: 58-69: p12-p1 */
-#define LEDHIO(__pin) (__pin < 4 ? (0x7UL - __pin) | 0x1UL << 11 : (0xbUL - __pin) | 0x1UL << 7)
+#define LEDHIO(__pin) (__pin < 4 ? (0x7UL - __pin) | 0x1UL << 11 : (0xbUL - __pin) | 0x1UL << 10)
 #define LED58 (0x0UL | 0x1UL << 10)
 #define LED59 (0x1UL | 0x1UL << 10)
 #define LED60 (0x2UL | 0x1UL << 10)

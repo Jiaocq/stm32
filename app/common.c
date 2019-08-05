@@ -20,15 +20,16 @@
 int hw_init()
 {
     int ret = 0;
-    ret -= HardwareInit();
-    ret -= AIAdcInit();
-    ret -= DIGAdcInit();
-    ret -= HIOAdcInit();
-    ret -= AD5686Init();
-    ret -= DAC8568Init();
+    ret += HardwareInit();
+    ret += AIAdcInit();
+    ret += DIGAdcInit();
+    ret += HIOAdcInit();
+    ret += AD5686Init();
+    ret += DAC8568Init();
+    ret += SpiioIinit();
     LEDInit();
     WriteLED(LED5, 1); /**power led on*/
-    DEBUG("hard init result : %d\r\n",ret);
+    DEBUG("hard init result : %d\r\n", ret);
     return ret;
 }
 
@@ -156,13 +157,13 @@ void set_module_state(int module, int state)
         WriteLED(LED15, blinkState);
         WriteLED(LED17, 0);
         break;
-    case 4:
+    case 3:
         WriteLED(LED11, blinkState);
         WriteLED(LED13, 0);
         WriteLED(LED15, 0);
         WriteLED(LED17, 0);
         break;
-    case 8:
+    case 4:
         WriteLED(LED11, 0);
         WriteLED(LED13, blinkState);
         WriteLED(LED15, 0);
@@ -195,12 +196,13 @@ void set_module_testing_result(int module, int *result)
         for (ledNum = 16; ledNum--;)
         {
             if (ledNum <= 15)
+            {
                 WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
-            if (ledNum <= 15)
                 WriteLED(LEDDO(ledNum), 0);
-            if (ledNum <= 8)
+            }
+            if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
-            if (ledNum <= 12)
+            if (ledNum < 12)
                 WriteLED(LEDHIO(ledNum), 0);
         }
         break;
@@ -208,12 +210,34 @@ void set_module_testing_result(int module, int *result)
         for (ledNum = 16; ledNum--;)
         {
             if (ledNum <= 15)
+            {
                 WriteLED(LEDDI(ledNum), 0);
-            if (ledNum <= 15)
                 WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
-            if (ledNum <= 8)
+            }
+            if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
-            if (ledNum <= 12)
+            if (ledNum < 12)
+                WriteLED(LEDHIO(ledNum), 0);
+        }
+        break;
+    case 3:
+        for (ledNum = 16; ledNum--;)
+        {
+            if (ledNum <= 15)
+            {
+                WriteLED(LEDDI(ledNum), 0);
+                WriteLED(LEDDO(ledNum), 0);
+            }
+            if (ledNum < 8)
+            {
+                if (ledNum == 1)
+                    WriteLED(LEDAI(2), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                else if (ledNum == 2)
+                    WriteLED(LEDAI(1), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                else
+                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+            }
+            if (ledNum < 12)
                 WriteLED(LEDHIO(ledNum), 0);
         }
         break;
@@ -221,30 +245,13 @@ void set_module_testing_result(int module, int *result)
         for (ledNum = 16; ledNum--;)
         {
             if (ledNum <= 15)
+            {
                 WriteLED(LEDDI(ledNum), 0);
-            if (ledNum <= 15)
                 WriteLED(LEDDO(ledNum), 0);
-            if (ledNum <= 8)
-                if(ledNum == 2) 
-                    WriteLED(3, *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
-                if(ledNum == 2) 
-                    WriteLED(2, *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
-                else
-                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
-            if (ledNum <= 12)
-                WriteLED(LEDHIO(ledNum), 0);
-        }
-        break;
-    case 8:
-        for (ledNum = 16; ledNum--;)
-        {
-            if (ledNum <= 15)
-                WriteLED(LEDDI(ledNum), 0);
-            if (ledNum <= 15)
-                WriteLED(LEDDO(ledNum), 0);
-            if (ledNum <= 8)
+            }
+            if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
-            if (ledNum <= 12)
+            if (ledNum < 12)
                 WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
         }
         break;
@@ -269,48 +276,48 @@ void set_normal_run_flag()
  */
 void set_error_indication(int error_num)
 {
-    uint64_t time = (TimeMs() % (uint64_t)1000);
+    uint64_t time = (TimeMs() % (uint64_t)2000);
     uint8_t ledState = 0;
     switch (error_num)
     {
     case ERROR_INIT:
-        if (time < 500UL)
+        if (time < 700UL)
             ledState = 1;
-        else if (time < 550UL)
+        else if (time < 900UL)
             ledState = 0;
-        else if (time < 600UL)
+        else if (time < 1000UL)
             ledState = 1;
         else
             ledState = 0;
         break;
     case ERROR_MODULE:
-        if (time < 500UL)
+        if (time < 700UL)
             ledState = 1;
-        else if (time < 550UL)
+        else if (time < 900UL)
             ledState = 0;
-        else if (time < 600UL)
+        else if (time < 1000UL)
             ledState = 1;
-        else if (time < 650UL)
+        else if (time < 1100UL)
             ledState = 0;
-        else if (time < 700UL)
+        else if (time < 1200UL)
             ledState = 1;
         else
             ledState = 0;
         break;
     case ERROR_TEST_FATAL:
-        if (time < 500UL)
+        if (time < 700UL)
             ledState = 1;
-        else if (time < 550UL)
+        else if (time < 900UL)
             ledState = 0;
-        else if (time < 600UL)
+        else if (time < 1000UL)
             ledState = 1;
-        else if (time < 650UL)
+        else if (time < 1100UL)
             ledState = 0;
-        else if (time < 700UL)
+        else if (time < 1200UL)
             ledState = 1;
-        else if (time < 750UL)
+        else if (time < 1300UL)
             ledState = 0;
-        else if (time < 800UL)
+        else if (time < 1400UL)
             ledState = 1;
         else
             ledState = 0;
@@ -320,7 +327,7 @@ void set_error_indication(int error_num)
     default:
         break;
     }
-    WriteLED(LED6, ledState); /**err */
+    WriteLED(LED8, ledState); /**err */
 }
 
 /*

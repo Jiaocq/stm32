@@ -14,7 +14,10 @@
 #define HIO_TB 4
 
 static int state = 0;
-static int results[4][16] = {{1,}, {1,}, {1,}, {1,}};
+static int results[4][16] = {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
+                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
+                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
+                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, };
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -32,7 +35,7 @@ int test_DI_tb(int *result)
         channel_index = 0;
         num = 0;
         value = 0;
-        memset(result, 0, 16);
+        memset(result, 0, 16*sizeof(*result));
         state_DI_test++;
     case 1:
         set_tb_digital_stimulation(DI_TB, channel_index + 1, value);
@@ -81,8 +84,8 @@ int test_AI_tb(int *result)
     static int value = 0;
     static int expect_voltage_value = 0;
     static int voltage_value_index = 0;
+    static int num;
     int ret;
-    int num;
     int voltage_A1;
     int voltage_A2;
 
@@ -93,7 +96,7 @@ int test_AI_tb(int *result)
         num = 0;
         value = 0;
         voltage_value_index = 0;
-        memset(result, 0, 16);
+        memset(result, 0, 16*sizeof(*result));
         state_AI_test++;
     case 1:
         // 2-line mode
@@ -180,7 +183,7 @@ int test_DO_tb(int *result)
         channel_index = 0;
         num = 0;
         value = 0;
-        memset(result, 0, 16);
+        memset(result, 0, 16*sizeof(*result));
         state_DO_test++;
     case 1:
         set_tb_digital_stimulation(DO_TB, channel_index + 1, value);
@@ -235,8 +238,8 @@ int test_HIO_tb(int *result)
     static int value = 0;
     static int expect_voltage_value = 0;
     static int voltage_value_index = 0;
+    static int num;
     int ret;
-    int num;
     int voltage_A1;
     int voltage_A2;
     ret = TEST_MORE_OPERATION;
@@ -246,7 +249,7 @@ int test_HIO_tb(int *result)
         num = 0;
         value = 0;
         voltage_value_index = 0;
-        memset(result, 0, 16);
+        memset(result, 0, 16*sizeof(*result));
         state_HIO_test = 1;
     case 1:
         if (channel_index <= 7 && channel_index >= 0) {
@@ -258,7 +261,7 @@ int test_HIO_tb(int *result)
             set_tb_ai_2lines_stimulation(AI_TB, channel_index + 1, value);
             state_HIO_test = 2;
         } else if (channel_index >= 10 && channel_index <= 11) {
-            state_HIO_test = 3;
+            state_HIO_test = 2;
         }
         time_start = get_time_ms();
         break;
@@ -278,7 +281,7 @@ int test_HIO_tb(int *result)
                 }
                 state_HIO_test = 1;
             } else if (channel_index <= 9) {
-                get_tb_ai_output(AI_TB, channel_index + 1, &voltage_A1, &voltage_A2);
+                get_tb_ai_output(HIO_TB, channel_index + 1, &voltage_A1, &voltage_A2);
                 if ((abs(expect_voltage_value - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP)) {
                     result[channel_index] = -1;
                 } else if (result[channel_index] == 0) {
@@ -293,7 +296,7 @@ int test_HIO_tb(int *result)
                     state_HIO_test = 1;
                 }
             } else if (channel_index <= 11) {
-                DEBUG("error\r\n");
+                state_HIO_test = 3;
             }
         }
         break;

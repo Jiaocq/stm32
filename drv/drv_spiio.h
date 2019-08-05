@@ -13,6 +13,10 @@
                         pin 12-15 output for HIO AI 4422 , hogh to high : 0x000f*/
 #define TOAI 0x3      /**u96 out put for AI , pins 0-7 for 4line's 0-7, pins 8-15 for 2line's 0-7 */
 
+
+/**init all mcp23s17 */
+int SpiioIinit();
+
 /**write a pin
  *   FROMHIO  TOFROMHIO TOAI
  */

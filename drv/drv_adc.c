@@ -24,10 +24,10 @@ static int32_t ReadAIAdc(uint8_t channel)
     HAL_SPI_Receive(&AIAdcSPIBUS, recvReg, AIAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
-    if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
+    if (sendData[0] != recvReg[0] || sendData[1] != (recvReg[1] & 0xfc))
     {
         DEBUG("ReadAIAdc err\r\n");
-        return -(int32_t)(*((uint16_t *)recvData));
+        return -1;
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -52,10 +52,10 @@ static int32_t ReadDIGAdc(uint8_t channel)
     HAL_SPI_Receive(&DIGAdcSPIBUS, recvReg, DIGAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
-    if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
+    if (sendData[0] != recvReg[0] || sendData[1] != (recvReg[1] & 0xfc))
     {
         DEBUG("ReadDIGAdc err\r\n");
-        return -(int32_t)(*((uint16_t *)recvData));
+        return -1;
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -80,10 +80,10 @@ static int32_t ReadHIOAdc(uint8_t channel)
     HAL_SPI_Receive(&HIOAdcSPIBUS, recvReg, HIOAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_SET);
     DelayUs(5);
-    if (sendData[0] != recvReg[0] || sendData[1] != recvReg[1] & 0xf6)
+    if (sendData[0] != recvReg[0] || sendData[1] != (recvReg[1] & 0xfc))
     {
         DEBUG("ReadHIOAdc err\r\n");
-        return -(int32_t)(*((uint16_t *)recvData));
+        return -1;
     }
     return (int32_t)(*((uint16_t *)recvData));
 }
@@ -102,11 +102,12 @@ static uint16_t ReqHIOAdc(uint8_t channel)
 int32_t AIAdcInit()
 {
     int ret = 0;
-    for(uint8_t channel = 8;channel--;){
-    ReqAIAdc(channel);
-    ReqAIAdc(channel);
-    if (0 > ReadAIAdc(channel))
-        ret -= 1;
+    for (uint8_t channel = 8; channel--;)
+    {
+        ReqAIAdc(channel);
+        ReqAIAdc(channel);
+        if (0 > ReadAIAdc(channel))
+            ret -= 1;
     }
     return ret;
 }
@@ -115,11 +116,12 @@ int32_t AIAdcInit()
 int32_t DIGAdcInit()
 {
     int ret = 0;
-    for(uint8_t channel = 8;channel--;){
-    ReqDIGAdc(channel);
-    ReqDIGAdc(channel);
-    if (0 > ReadDIGAdc(channel))
-        ret -= 1;
+    for (uint8_t channel = 8; channel--;)
+    {
+        ReqDIGAdc(channel);
+        ReqDIGAdc(channel);
+        if (0 > ReadDIGAdc(channel))
+            ret -= 1;
     }
     return ret;
 }
@@ -128,11 +130,12 @@ int32_t DIGAdcInit()
 int32_t HIOAdcInit()
 {
     int ret = 0;
-    for(uint8_t channel = 8;channel--;){
-    ReqHIOAdc(channel);
-    ReqHIOAdc(channel);
-    if (0 > ReadHIOAdc(channel))
-        ret -= 1;
+    for (uint8_t channel = 8; channel--;)
+    {
+        ReqHIOAdc(channel);
+        ReqHIOAdc(channel);
+        if (0 > ReadHIOAdc(channel))
+            ret -= 1;
     }
     return ret;
 }

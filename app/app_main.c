@@ -1,11 +1,12 @@
 #include "common.h"
 
-extern  int cunit();
+extern int cunit();
 int main(void)
 {
-  cunit();
-  // manage_entry();
- 
+#if 0
+  cunit();/**for debug*/
+#endif
+  manage_entry();
   while (1)
   {
   }

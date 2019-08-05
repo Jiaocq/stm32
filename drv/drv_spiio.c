@@ -35,7 +35,7 @@
 #define OLATB 0x15U
 
 /**init status */
-typedef enum SpiInitState {PAUSE, WORKING};
+typedef enum SpiInitState {PAUSE, WORKING}spiInitState;
 enum SpiInitState initStatus = PAUSE;
 
 static uint8_t ReadDIDO(uint32_t sendData)
@@ -118,20 +118,21 @@ static int SpiioDeinit()
 }
 
 /**init all mcp23s17 */
-static int SpiioIinit()
+int SpiioIinit()
 {
+    int ret=0;
     /** configure  */
     /** reset all gpio */
     SpiioDeinit();
     /*init FROMDO in inputmode, but nothing to be done,high to high*/
     if (0x38 != ReadDIDO(ReadReg(FROMDO, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadDIDO(ReadReg(FROMDO, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(FROMDO, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(FROMDO, IODIRB)))
-        return -1;
+        ret -= 1;
     /*init TODI in output mode, and high level to close dev*/
     WriteDIDO(WriteReg(TODI, OLATA, 0xff));
     WriteDIDO(WriteReg(TODI, OLATB, 0xff));
@@ -140,17 +141,17 @@ static int SpiioIinit()
     WriteDIDO(WriteReg(TODI, OLATA, 0xff));
     WriteDIDO(WriteReg(TODI, OLATB, 0xff));
     if (0x38 != ReadDIDO(ReadReg(TODI, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadDIDO(ReadReg(TODI, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadDIDO(ReadReg(TODI, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadDIDO(ReadReg(TODI, IODIRB)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(TODI, OLATA)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(TODI, OLATB)))
-        return -1;
+        ret -= 1;
     /*init TODO  in output mode, and high level to close */
     WriteDIDO(WriteReg(TODO, OLATA, 0xff));
     WriteDIDO(WriteReg(TODO, OLATB, 0xff));
@@ -159,35 +160,35 @@ static int SpiioIinit()
     WriteDIDO(WriteReg(TODO, OLATA, 0xff));
     WriteDIDO(WriteReg(TODO, OLATB, 0xff));
     if (0x38 != ReadDIDO(ReadReg(TODO, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadDIDO(ReadReg(TODO, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadDIDO(ReadReg(TODO, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadDIDO(ReadReg(TODO, IODIRB)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(TODO, OLATA)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(TODO, OLATB)))
-        return -1;
+        ret -= 1;
     /*init FROMDI in inputmode, but nothing to be done, hirh to high*/
     if (0x38 != ReadDIDO(ReadReg(FROMDI, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadDIDO(ReadReg(FROMDI, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(FROMDI, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadDIDO(ReadReg(FROMDI, IODIRB)))
-        return -1;
+        ret -= 1;
     /**init FROMHIO in inputmode, but nothing to be done, high to high*/
     if (0x38 != ReadAIHIO(ReadReg(FROMHIO, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadAIHIO(ReadReg(FROMHIO, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadAIHIO(ReadReg(FROMHIO, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0xff != ReadAIHIO(ReadReg(FROMHIO, IODIRB)))
-        return -1;
+        ret -= 1;
     /**init TOFROMHIO IOB0-7 :output, low level to close other dev
     * IOA 0-3 : input , if high level input ,it is high level */
     WriteAIHIO(WriteReg(TOFROMHIO, IODIRA, 0x0f));
@@ -195,17 +196,17 @@ static int SpiioIinit()
     WriteAIHIO(WriteReg(TOFROMHIO, IODIRB, 0x00));
     WriteAIHIO(WriteReg(TOFROMHIO, OLATB, 0x00));
     if (0x38 != ReadAIHIO(ReadReg(TOFROMHIO, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadAIHIO(ReadReg(TOFROMHIO, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0x0f != ReadAIHIO(ReadReg(TOFROMHIO, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOFROMHIO, IODIRB)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOFROMHIO, OLATA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOFROMHIO, OLATB)))
-        return -1;
+        ret -= 1;
     /*init TOAI output, low level to close other dev*/
     WriteAIHIO(WriteReg(TOAI, OLATA, 0x00));
     WriteAIHIO(WriteReg(TOAI, OLATB, 0x00));
@@ -214,19 +215,19 @@ static int SpiioIinit()
     WriteAIHIO(WriteReg(TOAI, OLATA, 0x00));
     WriteAIHIO(WriteReg(TOAI, OLATB, 0x00));
     if (0x38 != ReadAIHIO(ReadReg(TOAI, IOCONA)))
-        return -1;
+        ret -= 1;
     if (0x38 != ReadAIHIO(ReadReg(TOAI, IOCONB)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOAI, IODIRA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOAI, IODIRB)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOAI, OLATA)))
-        return -1;
+        ret -= 1;
     if (0x00 != ReadAIHIO(ReadReg(TOAI, OLATB)))
-        return -1;
+        ret -= 1;
     initStatus = WORKING;
-    return 0;
+    return ret;
 }
 
 /**read a pin
@@ -246,7 +247,7 @@ int ReadDIDOPin(uint8_t devId, uint8_t pinId)
         pinId -= 8;
     } else
         return -1;
-    return ioState & (0x1 << pinId);
+    return ioState >> pinId & 0x1;
 }
 
 /**write a pin
@@ -303,7 +304,7 @@ int ReadAIHIOPin(uint8_t devId, uint8_t pinId)
         pinId -= 8;
     } else
         return -1;
-    return ioState & (0x1 << pinId);
+    return ioState >> pinId & 0x1;
 }
 
 /**write a pin
