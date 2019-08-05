@@ -7,26 +7,22 @@
 #include "usart.h"
 #include "gpio.h"
 
-
 #define UART huart5
-
 
 /*redefine printf to UART */
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-PUTCHAR_PROTOTYPE
-{
-  HAL_UART_Transmit(&UART, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
-  return ch;
+PUTCHAR_PROTOTYPE {
+    HAL_UART_Transmit(&UART, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+    return ch;
 }
 int _write(int file, char *ptr, int len)
 {
-      int DataIdx;
-      for (DataIdx = 0; DataIdx < len;DataIdx++)
-     {
-           __io_putchar(*ptr++);
-     }
-      return len;
+    int DataIdx;
+    for (DataIdx = 0; DataIdx < len; DataIdx++) {
+        __io_putchar(*ptr++);
+    }
+    return len;
 }
 #endif
 
@@ -41,9 +37,9 @@ void osprintf(const char *fmt, ...)
 
     va_start(args, fmt);
     length = vsnprintf(log_buf, sizeof(log_buf) - 1, fmt, args);
-    if(length > CONSOLEBUF_SIZE - 1)
+    if (length > CONSOLEBUF_SIZE - 1)
         length = CONSOLEBUF_SIZE - 1;
-    HAL_UART_Transmit(&UART, (uint8_t*)log_buf, length,1000);
+    HAL_UART_Transmit(&UART, (uint8_t *)log_buf, length, 1000);
     va_end(args);
 
 }

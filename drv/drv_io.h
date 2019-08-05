@@ -1,6 +1,9 @@
 #ifndef _DRV_IO_H_
 #define _DRV_IO_H_
 
+#include "stm32f4xx_hal.h"
+
+/**power led */
 #define LED5 (0x4UL | 0x1UL << 3)
 #define LED6 (0x5UL | 0x1UL << 3)
 #define LED7 (0x6UL | 0x1UL << 3)
@@ -15,8 +18,8 @@
 #define LED15 (0x5UL | 0x1UL << 4)
 #define LED16 (0x6UL | 0x1UL << 4)
 #define LED17 (0x7UL | 0x1UL << 4)
+
 /**DI led : 18-33 : p16-p1 */
-#define LEDDI(__pin) (__pin < 8 ? (0x7UL - __pin) | 0x1UL << 6 : (0xfUL - __pin) | 0x1UL << 5)
 #define LED18 (0x0UL | 0x1UL << 5)
 #define LED19 (0x1UL | 0x1UL << 5)
 #define LED20 (0x2UL | 0x1UL << 5)
@@ -34,8 +37,8 @@
 #define LED31 (0x5UL | 0x1UL << 6)
 #define LED32 (0x6UL | 0x1UL << 6)
 #define LED33 (0x7UL | 0x1UL << 6)
+
 /**DO led : 34-49: p16:p1 */
-#define LEDDO(__pin) (__pin < 8 ? (0x7UL - __pin) | 0x1UL << 8 : (0xfUL - __pin) | 0x1UL << 7)
 #define LED34 (0x0UL | 0x1UL << 7)
 #define LED35 (0x1UL | 0x1UL << 7)
 #define LED36 (0x2UL | 0x1UL << 7)
@@ -53,8 +56,8 @@
 #define LED47 (0x5UL | 0x1UL << 8)
 #define LED48 (0x6UL | 0x1UL << 8)
 #define LED49 (0x7UL | 0x1UL << 8)
+
 /**AI led: 50-57: p8-p1 */
-#define LEDAI(__pin) ((0x7UL - __pin) | 0x1UL << 9)
 #define LED50 (0x0UL | 0x1UL << 9)
 #define LED51 (0x1UL | 0x1UL << 9)
 #define LED52 (0x2UL | 0x1UL << 9)
@@ -63,8 +66,8 @@
 #define LED55 (0x6UL | 0x1UL << 9)
 #define LED56 (0x5UL | 0x1UL << 9)
 #define LED57 (0x7UL | 0x1UL << 9)
+
 /**HIO led: 58-69: p12-p1 */
-#define LEDHIO(__pin) (__pin < 4 ? (0x7UL - __pin) | 0x1UL << 11 : (0xbUL - __pin) | 0x1UL << 10)
 #define LED58 (0x0UL | 0x1UL << 10)
 #define LED59 (0x1UL | 0x1UL << 10)
 #define LED60 (0x2UL | 0x1UL << 10)
@@ -79,9 +82,18 @@
 #define LED68 (0x6UL | 0x1UL << 11)
 #define LED69 (0x7UL | 0x1UL << 11)
 
+/**led for tb DI ,pin 0-15 for tb DI 0-15 */
+#define LEDDI(__pin) (__pin < 8 ? (0x7UL - __pin) | 0x1UL << 6 : (0xfUL - __pin) | 0x1UL << 5)
+/**led for tb DO ,pin 0-15 for tb DI 0-15 */
+#define LEDDO(__pin) (__pin < 8 ? (0x7UL - __pin) | 0x1UL << 8 : (0xfUL - __pin) | 0x1UL << 7)
+/**led for tb AI ,pin 0-7 for tb DI 0-7 */
+#define LEDAI(__pin) ((0x7UL - __pin) | 0x1UL << 9)
+/**led for tb HIO ,pin 0-11 for tb DI 0-11 */
+#define LEDHIO(__pin) (__pin < 4 ? (0x7UL - __pin) | 0x1UL << 11 : (0xbUL - __pin) | 0x1UL << 10)
+
 /**write a led 
  * ledId : LEDXX
- * ledState : 0 1
+ * ledState : 0 1 for on and off
  */
 void WriteLED(uint32_t ledId, uint8_t ledState);
 

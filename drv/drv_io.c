@@ -21,8 +21,7 @@ void LEDInit()
     HAL_GPIO_WritePin(MCU_HIOC1_EN_POINT_LED_GPIO_Port, MCU_HIOC1_EN_POINT_LED_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(MCU_HIOC2_EN_POINT_LED_GPIO_Port, MCU_HIOC2_EN_POINT_LED_Pin, GPIO_PIN_RESET);
     /**let all led off */
-    for (uint8_t pins = 8; pins--;)
-    {
+    for (uint8_t pins = 8; pins--;) {
         HAL_GPIO_WritePin(MCU_1_POINT_LED_A0_GPIO_Port, MCU_1_POINT_LED_A0_Pin, pins & 0x1UL << 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
         HAL_GPIO_WritePin(MCU_1_POINT_LED_A1_GPIO_Port, MCU_1_POINT_LED_A1_Pin, pins & 0x1UL << 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
         HAL_GPIO_WritePin(MCU_1_POINT_LED_A2_GPIO_Port, MCU_1_POINT_LED_A2_Pin, pins & 0x1UL << 2 ? GPIO_PIN_SET : GPIO_PIN_RESET);
@@ -46,7 +45,7 @@ void LEDInit()
     DelayUs(2);
 }
 
-/**write a led 
+/**write a led
  * ledId
  * ledState : 0 1
  */

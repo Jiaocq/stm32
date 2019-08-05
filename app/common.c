@@ -21,15 +21,18 @@ int hw_init()
 {
     int ret = 0;
     ret += HardwareInit();
+    LEDInit();
+    WriteLED(LED5, 1); /**power led on*/
     ret += AIAdcInit();
     ret += DIGAdcInit();
     ret += HIOAdcInit();
     ret += AD5686Init();
     ret += DAC8568Init();
     ret += SpiioIinit();
-    LEDInit();
-    WriteLED(LED5, 1); /**power led on*/
-    DEBUG("hard init result : %d\r\n", ret);
+    if (ret == 0)
+        INFO("init successful\r\n");
+    else if (ret < 0)
+        INFO("hard init result : %d\r\n", ret);
     return ret;
 }
 
@@ -55,9 +58,7 @@ unsigned long long get_time_ms()
  */
 int get_test_module_flag()
 {
-    switch (getModeValue())
-    {
-
+    switch (getModeValue()) {
     case 0:
         return 0;
     case 1:
@@ -79,52 +80,43 @@ int get_test_module_flag()
  * return value:
  * 1: start signal arrived
  * 0: no start signal
- * single trigger 
+ * single trigger
  * */
-int get_start_event()
+int get_start_event(int module)
 {
     static int state = 0;
     static int lastState = 0;
     static uint64_t startTime = 0;
     static uint64_t keepTime = 0;
     static const uint64_t changeStateTime = 50;
-    switch (getStartKey())
-    {
+    switch (getStartKey()) {
     case 0:
-        if (0 == lastState)
-        {
+        if (0 == lastState) {
             keepTime = TimeMs() - startTime;
-        }
-        else
-        {
+        } else {
             startTime = TimeMs();
             keepTime = 0;
         }
         lastState = 0;
-        if (changeStateTime < keepTime)
-        {
+        if (changeStateTime < keepTime) {
             state = 0;
         }
         break;
     case 1:
-        if (1 == lastState)
-        {
+        if (1 == lastState) {
             keepTime = TimeMs() - startTime;
-        }
-        else
-        {
+        } else {
             startTime = TimeMs();
             keepTime = 0;
         }
         lastState = 1;
-        if (0 == state && changeStateTime < keepTime)
-        {
+        if (0 == state && changeStateTime < keepTime) {
             state = 1;
+            INFO("start test for module : %d\r\n", module);
             return 1;
         }
         break;
     }
-
     return 0;
 }
 
@@ -133,7 +125,7 @@ int get_start_event()
  * The LED of the module should blink by 1/s for IDLE or 5/s for TESTING.
  *
  * input parameters:
- *  module: 1,2,4,8 for DI/DO/AI/HIO respectively.
+ *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  state : 0,1 for IDLE and TESTING.
  */
 void set_module_state(int module, int state)
@@ -143,8 +135,7 @@ void set_module_state(int module, int state)
         blinkState = (uint8_t)(TimeMs() / (uint64_t)100 % (uint64_t)2);
     else
         blinkState = (uint8_t)(TimeMs() / (uint64_t)500 % (uint64_t)2);
-    switch (module)
-    {
+    switch (module) {
     case 1:
         WriteLED(LED11, 0);
         WriteLED(LED13, 0);
@@ -177,7 +168,7 @@ void set_module_state(int module, int state)
 /*
  * Set test result for specified module
  * input parameters:
- *  module: 1,2,4,8 for DI/DO/AI/HIO respectively.
+ *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  result: an int-type array with up to 16 items.
  *
  * The LEDs of the module should follow the definition below.
@@ -190,14 +181,11 @@ void set_module_testing_result(int module, int *result)
     uint8_t blinkState = 0;
     uint32_t ledNum = 0;
     blinkState = (uint8_t)(TimeMs() / (uint64_t)50 % (uint64_t)2);
-    switch (module)
-    {
+    switch (module) {
     case 1:
-        for (ledNum = 16; ledNum--;)
-        {
-            if (ledNum <= 15)
-            {
-                WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+        for (ledNum = 16; ledNum--;) {
+            if (ledNum <= 15) {
+                WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 WriteLED(LEDDO(ledNum), 0);
             }
             if (ledNum < 8)
@@ -207,12 +195,10 @@ void set_module_testing_result(int module, int *result)
         }
         break;
     case 2:
-        for (ledNum = 16; ledNum--;)
-        {
-            if (ledNum <= 15)
-            {
+        for (ledNum = 16; ledNum--;) {
+            if (ledNum <= 15) {
                 WriteLED(LEDDI(ledNum), 0);
-                WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
             }
             if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
@@ -221,38 +207,33 @@ void set_module_testing_result(int module, int *result)
         }
         break;
     case 3:
-        for (ledNum = 16; ledNum--;)
-        {
-            if (ledNum <= 15)
-            {
+        for (ledNum = 16; ledNum--;) {
+            if (ledNum <= 15) {
                 WriteLED(LEDDI(ledNum), 0);
                 WriteLED(LEDDO(ledNum), 0);
             }
-            if (ledNum < 8)
-            {
+            if (ledNum < 8) {
                 if (ledNum == 1)
-                    WriteLED(LEDAI(2), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(2), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 else if (ledNum == 2)
-                    WriteLED(LEDAI(1), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(1), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 else
-                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
             }
             if (ledNum < 12)
                 WriteLED(LEDHIO(ledNum), 0);
         }
         break;
     case 4:
-        for (ledNum = 16; ledNum--;)
-        {
-            if (ledNum <= 15)
-            {
+        for (ledNum = 16; ledNum--;) {
+            if (ledNum <= 15) {
                 WriteLED(LEDDI(ledNum), 0);
                 WriteLED(LEDDO(ledNum), 0);
             }
             if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
             if (ledNum < 12)
-                WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
         }
         break;
     default:
@@ -266,7 +247,7 @@ void set_module_testing_result(int module, int *result)
  */
 void set_normal_run_flag()
 {
-    uint8_t blinkState = (uint8_t)(TimeMs() / (uint64_t)500 % (uint64_t)2);
+    uint8_t blinkState = (uint8_t)(TimeMs() / (uint64_t)2000 % (uint64_t)2);
     WriteLED(LED7, blinkState); /**state */
 }
 
@@ -278,8 +259,7 @@ void set_error_indication(int error_num)
 {
     uint64_t time = (TimeMs() % (uint64_t)2000);
     uint8_t ledState = 0;
-    switch (error_num)
-    {
+    switch (error_num) {
     case ERROR_INIT:
         if (time < 700UL)
             ledState = 1;
@@ -340,24 +320,28 @@ void set_error_indication(int error_num)
  */
 void set_tb_digital_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type)
-    {
+    int ret = 0;
+    switch (tb_type) {
     case 1:                                                /**DI */
-        WriteDIDOPin(TODI, 16 - channel, !(uint8_t)value); /**output 0 will get 1 */
+        ret = WriteDIDOPin(TODI, 16 - channel, !(uint8_t)value); /**output 0 will get 1 */
         break;
     case 2: /**DO */
-        WriteDIDOPin(TODO, channel - 1, (uint8_t)value);
+        ret = WriteDIDOPin(TODO, channel - 1, (uint8_t)value);
         break;
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel <= 8 && channel >= 1)
-            WriteAIHIOPin(TOFROMHIO, channel + 3, !((uint8_t)value)); /**output 0 will get 1 */
+        if (channel <= 4 && channel >= 1)
+            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, !((uint8_t)value)); /**output 0 will get 1 */
+        else if (channel <= 8 && channel >= 5)
+            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, (uint8_t)value); /**output 0 will get 1 */
         break;
     default:
-        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+        ERROR("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s set tb digital stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         ret < 0 ? "error for : " : "successful", tb_type, channel, value) ;
 }
 
 /*
@@ -367,8 +351,7 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
 int get_tb_digital_output(int tb_type, int channel)
 {
     int value = 0;
-    switch (tb_type)
-    {
+    switch (tb_type) {
     case 1: /**DI */
         value = ReadDIDOPin(FROMDI, channel - 1);
         break;
@@ -387,6 +370,8 @@ int get_tb_digital_output(int tb_type, int channel)
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s get tb digital output : tb = %ld , channel = %ld , value = %ld \r\n",
+         value < 0 ? "error for : " : "sucessful ", tb_type, channel, value) ;
     return value;
 }
 
@@ -399,30 +384,30 @@ int get_tb_digital_output(int tb_type, int channel)
  */
 void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type)
-    {
+    int ret = 0;
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8)
-        {
-            WriteAIHIOPin(TOAI, channel - 1, 0);              /**4line manage */
-            WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value); /**2lines manage */
+        if (channel >= 1 && channel <= 8) {
+            ret += WriteAIHIOPin(TOAI, channel - 1, 0);              /**4line manage */
+            ret += WriteAIHIOPin(TOAI, channel + 7, (uint8_t)value); /**2lines manage */
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10)
-        {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 0);              /**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value); /**2line */
+        if (channel >= 9 && channel <= 10) {
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 0);              /**4line */
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 5, (uint8_t)value); /**2line */
         }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s set tb ai 2lines stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         ret < 0 ? "error for : " : "sucessful ", tb_type, channel, value) ;
 }
 
 /*
@@ -433,32 +418,32 @@ void set_tb_ai_2lines_stimulation(int tb_type, int channel, int value)
  */
 void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type)
-    {
+    int ret = 0;
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8)
-        {
-            WriteAIHIOPin(TOAI, channel + 7, 0); /**2lines manage */
-            WriteAIHIOPin(TOAI, channel - 1, 1); /**4line manage */
-            WriteDAC8568Value(channel - 1, (uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 1 && channel <= 8) {
+            ret += WriteAIHIOPin(TOAI, channel + 7, 0); /**2lines manage */
+            ret += WriteAIHIOPin(TOAI, channel - 1, 1); /**4line manage */
+            ret += WriteDAC8568Value(channel - 1, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10)
-        {
-            WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
-            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 9 && channel <= 10) {
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s set tb ai 4lines stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         ret < 0 ? "error for : " : "sucessful ", tb_type, channel, value) ;
 }
 
 /*
@@ -470,27 +455,22 @@ void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
  */
 int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 {
-    switch (tb_type)
-    {
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8)
-        {
+        if (channel >= 1 && channel <= 8) {
             *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
             *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10)
-        {
+        if (channel >= 9 && channel <= 10) {
             *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
-        }
-        else if (channel >= 11 && channel <= 12)
-        {
+        } else if (channel >= 11 && channel <= 12) {
             *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
         }
@@ -499,14 +479,17 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
-    if (*value_A1 < 0 || *value_A2 < 0)
-    {
-        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+    INFO("%s get tb ai output : tb = %ld , channel = %ld , value_A1 = %ld, value_A2 = %ld  \r\n",
+         (*value_A1 < 0 || *value_A2 < 0) ? "error for : " : "sucessful ",
+         tb_type, channel, *value_A1, *value_A2) ;
+    if (*value_A1 < 0 || *value_A2 < 0) {
+        ERROR("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         return -1;
     }
     return 0;
 }
 
+#if 0
 /*
  * Stimulation --> DB50 --> TerminalBoard --> Terminal --> Acquistion
  * Set AI tb stimulation by 4 lines mode.
@@ -516,8 +499,8 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
  */
 void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
 {
-    switch (tb_type)
-    {
+    int ret = 0;
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -525,23 +508,25 @@ void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10)
-        {
-            WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
-            WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
-            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 9 && channel <= 10) {
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
-        if (channel >= 11 && channel <= 12)
-        {
-            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 11 && channel <= 12) {
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s set tb hio 4lines stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         ret < 0 ? "error for : " : "sucessful ", tb_type, channel, value) ;
 }
+#endif
 
+#if 0
 /*
  * Set AI tb stimulation by 4 lines mode.
  * parameters:
@@ -551,27 +536,22 @@ void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
  */
 int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 {
-    switch (tb_type)
-    {
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8)
-        {
+        if (channel >= 1 && channel <= 8) {
             *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
             *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10)
-        {
+        if (channel >= 9 && channel <= 10) {
             *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
-        }
-        else if (channel >= 11 && channel <= 12)
-        {
+        } else if (channel >= 11 && channel <= 12) {
             *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
         }
@@ -580,13 +560,17 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
-    if (*value_A1 < 0 || *value_A2 < 0)
-    {
+    INFO("%s get tb hio ai output : tb = %ld , channel = %ld , value_A1 = %ld, value_A2 = %ld  \r\n",
+         (*value_A1 < 0 || *value_A2 < 0) ? "error for : " : "sucessful ",
+         tb_type, channel, *value_A1, *value_A2) ;
+    if (*value_A1 < 0 || *value_A2 < 0) {
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         return -1;
     }
     return 0;
 }
+#endif
+
 /*
  * Set HIO-AO tb stimulation by 4 lines mode.
  * parameters:
@@ -597,8 +581,7 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 int set_tb_ao_stimulation(int tb_type, int channel, int value)
 {
     int ret = 0;
-    switch (tb_type)
-    {
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -606,15 +589,16 @@ int set_tb_ao_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 11 && channel <= 12)
-        {
-            WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+        if (channel >= 11 && channel <= 12) {
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
     default:
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
+    INFO("%s set tb ao stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         ret < 0 ? "error for : " : "sucessful ", tb_type, channel, value) ;
     return ret;
 }
 
@@ -627,8 +611,7 @@ int set_tb_ao_stimulation(int tb_type, int channel, int value)
  */
 int get_tb_ao_output(int tb_type, int channel, int *value)
 {
-    switch (tb_type)
-    {
+    switch (tb_type) {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -636,8 +619,7 @@ int get_tb_ao_output(int tb_type, int channel, int *value)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 11 && channel <= 12)
-        {
+        if (channel >= 11 && channel <= 12) {
             *value = (int)(HIOReadCh(channel - 7) * (int32_t)2500 / (int32_t)0xff);
         }
         break;
@@ -645,9 +627,10 @@ int get_tb_ao_output(int tb_type, int channel, int *value)
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     }
-    if (*value < 0)
-    {
-        DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
+    INFO("%s get tb ao output stimulation : tb = %ld , channel = %ld , value = %ld \r\n",
+         *value < 0 ? "error for : " : "sucessful ", tb_type, channel, *value) ;
+    if (*value < 0) {
+        ERROR("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         return -1;
     }
     return 0;

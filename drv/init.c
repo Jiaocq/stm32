@@ -11,7 +11,6 @@ int HardwareInit()
 {
     HAL_Init();
     SystemClock_Config();
-
     MX_GPIO_Init();
     MX_DMA_Init();
     MX_TIM5_Init();
@@ -23,6 +22,5 @@ int HardwareInit()
     MX_UART5_Init();
     HAL_TIM_Base_Start_IT(&htim2);
     HAL_TIM_Base_Start_IT(&htim5);
-
     return 0;
 }

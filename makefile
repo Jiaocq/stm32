@@ -1,9 +1,7 @@
 # C defines
 C_DEFS += -DUSE_HAL_DRIVER 
 C_DEFS += -DSTM32F427xx 
-C_DEFS += -DUSE_HAL_DRIVER 
 C_DEFS += -DARM_MATH_CM4 
-C_DEFS += -DLITTLE_ENDIAN
 
 
 ######################################
@@ -12,7 +10,7 @@ C_DEFS += -DLITTLE_ENDIAN
 # debug build?
 DEBUG = 2
 # optimization
-OPT = -O0
+OPT = -O3
 
 
 #######################################
@@ -21,11 +19,11 @@ OPT = -O0
 C_INCLUDES =  -IInc 
 C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc 
 C_INCLUDES += -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy 
-C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include 
 C_INCLUDES += -IDrivers/CMSIS/Include 
 C_INCLUDES += -IDrivers/CMSIS/DSP/Include
 C_INCLUDES += -Iapp
 C_INCLUDES += -Idrv
+C_INCLUDES += -IDrivers/CMSIS/Device/ST/STM32F4xx/Include 
 
 
 ######################################

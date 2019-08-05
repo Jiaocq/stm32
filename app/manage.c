@@ -14,10 +14,11 @@
 #define HIO_TB 4
 
 static int state = 0;
-static int results[4][16] = {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
-                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
-                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
-                             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, };
+static int results[4][16] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
+};
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -35,7 +36,7 @@ int test_DI_tb(int *result)
         channel_index = 0;
         num = 0;
         value = 0;
-        memset(result, 0, 16*sizeof(*result));
+        memset(result, 0, 16 * sizeof(*result));
         state_DI_test++;
     case 1:
         set_tb_digital_stimulation(DI_TB, channel_index + 1, value);
@@ -88,15 +89,13 @@ int test_AI_tb(int *result)
     int ret;
     int voltage_A1;
     int voltage_A2;
-
-    ret = TEST_MORE_OPERATION;
     switch (state_AI_test) {
     case 0:
         channel_index = 0;
         num = 0;
         value = 0;
         voltage_value_index = 0;
-        memset(result, 0, 16*sizeof(*result));
+        memset(result, 0, 16 * sizeof(*result));
         state_AI_test++;
     case 1:
         // 2-line mode
@@ -183,7 +182,7 @@ int test_DO_tb(int *result)
         channel_index = 0;
         num = 0;
         value = 0;
-        memset(result, 0, 16*sizeof(*result));
+        memset(result, 0, 16 * sizeof(*result));
         state_DO_test++;
     case 1:
         set_tb_digital_stimulation(DO_TB, channel_index + 1, value);
@@ -249,7 +248,7 @@ int test_HIO_tb(int *result)
         num = 0;
         value = 0;
         voltage_value_index = 0;
-        memset(result, 0, 16*sizeof(*result));
+        memset(result, 0, 16 * sizeof(*result));
         state_HIO_test = 1;
     case 1:
         if (channel_index <= 7 && channel_index >= 0) {
@@ -382,9 +381,8 @@ int manage_entry()
                 // Set state and result for specified module.
                 set_module_state(module, state);
                 set_module_testing_result(module, results[module - 1]);
-
                 // Detect start event.
-                start_event = get_start_event();
+                start_event = get_start_event(module);
                 if (start_event) {
                     state = TESTING;
                 }

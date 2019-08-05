@@ -4,10 +4,9 @@ extern int cunit();
 int main(void)
 {
 #if 0
-  cunit();/**for debug*/
+    cunit();/**for debug*/
 #endif
-  manage_entry();
-  while (1)
-  {
-  }
+    manage_entry();
+    while (1) {
+    }
 }

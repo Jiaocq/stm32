@@ -35,7 +35,7 @@
 #define OLATB 0x15U
 
 /**init status */
-typedef enum SpiInitState {PAUSE, WORKING}spiInitState;
+typedef enum SpiInitState {PAUSE, WORKING} spiInitState;
 enum SpiInitState initStatus = PAUSE;
 
 static uint8_t ReadDIDO(uint32_t sendData)
@@ -120,7 +120,7 @@ static int SpiioDeinit()
 /**init all mcp23s17 */
 int SpiioIinit()
 {
-    int ret=0;
+    int ret = 0;
     /** configure  */
     /** reset all gpio */
     SpiioDeinit();
@@ -283,7 +283,9 @@ int WriteDIDOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
         if (ioState != ReadDIDO(ReadReg(devId, IOB)))
             return -2;
     } else
+    {
         return -1;
+    }
     return 0;
 }
 

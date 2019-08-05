@@ -36,6 +36,7 @@ int hw_init();
  * Get current time in units of ms
  */
 unsigned long long get_time_ms();
+
 /*
  * Get test module indication.
  *
@@ -64,7 +65,7 @@ int get_start_event();
  * The LED of the module should blink by 1/s for IDLE or 5/s for TESTING.
  *
  * input parameters:
- *  module: 1,2,4,8 for DI/DO/AI/HIO respectively.
+ *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  state : 0,1 for IDLE and TESTING.
  */
 void set_module_state(int module, int state);
@@ -72,7 +73,7 @@ void set_module_state(int module, int state);
 /*
  * Set test result for specified module
  * input parameters:
- *  module: 1,2,4,8 for DI/DO/AI/HIO respectively.
+ *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  result: an int-type array with up to 16 items.
  *
  * The LEDs of the module should follow the definition below.
@@ -175,7 +176,7 @@ int  get_tb_ao_output(int tb_type, int channel, int *value);
  * 0: complete
  * 1: more operation.
  */
-int test_DI_tb(int* result);
+int test_DI_tb(int *result);
 
 /*
  * Test DO terminal board
@@ -190,7 +191,7 @@ int test_DI_tb(int* result);
  * 0: complete
  * 1: more operation.
  */
-int test_DO_tb(int* result);
+int test_DO_tb(int *result);
 
 /*
  * Test AI terminal board
@@ -203,7 +204,7 @@ int test_DO_tb(int* result);
  * 0: complete
  * 1: more operation.
  */
-int test_AI_tb(int* result);
+int test_AI_tb(int *result);
 
 /*
  * Test HIO terminal board
@@ -216,7 +217,7 @@ int test_AI_tb(int* result);
  * 0: complete
  * 1: more operation.
  */
-int test_HIO_tb(int* result);
+int test_HIO_tb(int *result);
 
 int manage_entry();
 #endif
