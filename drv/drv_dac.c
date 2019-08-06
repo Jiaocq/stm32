@@ -114,6 +114,7 @@ int32_t WriteAD5686Value(uint32_t channel, uint32_t data)
     WriteAD5686((uint8_t *)&sendData);
     /*write data */
     channel = 1 << channel;
+    data &= 0xffffUL;
     data /= AD5686Gain;
     sendData = AD5686WrtReg(channel, data);
     WriteAD5686((uint8_t *)&sendData);
@@ -133,6 +134,7 @@ int32_t WriteDAC8568Value(uint32_t channel, uint32_t data)
     sendData = DAC8568PwrUpCh(channel);
     WriteDAC8568((uint8_t *)&sendData);
     /* write a channel */
+    data &= 0xffffUL;
     data /= DAC8568Gain;
     sendData = DAC8568WrtReg(channel, data);
     WriteDAC8568((uint8_t *)&sendData);
@@ -150,6 +152,7 @@ int32_t WriteDAC8568AllCh(uint32_t data)
     sendData = DAC8568PwrUpAll;
     WriteDAC8568((uint8_t *)&sendData);
     /**write data */
+    data &= 0xffffUL;
     data /= DAC8568Gain;
     sendData = DAC8568WrtAllReg(data);
     WriteDAC8568((uint8_t *)&sendData);
@@ -166,6 +169,7 @@ int32_t WriteAD5686AllCh(uint32_t data)
     sendData = AD5686PwrUpAll;
     WriteDAC8568((uint8_t *)&sendData);
     /*write data */
+    data &= 0xffffUL;
     data /= AD5686Gain;
     sendData = AD5686WrtReg(0xfUL, data);
     WriteAD5686((uint8_t *)&sendData);

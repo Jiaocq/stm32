@@ -3,7 +3,7 @@
 
 #define DEBUG osprintf
 #define INFO  osprintf
-#define ERROR(...)
+#define ERROR osprintf
 /**out put data to uart */
 void osprintf(const char *fmt, ...);
 

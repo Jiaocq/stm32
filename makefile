@@ -10,7 +10,7 @@ C_DEFS += -DARM_MATH_CM4
 # debug build?
 DEBUG = 2
 # optimization
-OPT = -O3
+OPT = -O0
 
 
 #######################################

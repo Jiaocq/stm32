@@ -15,7 +15,7 @@
 #define MAX_AI_CHANNEL          7
 #define MAX_DO_CHANNEL          15
 #define MAX_HIO_CHANNEL         11
-#define STIMULATION_STABLE_TIME 1000
+#define STIMULATION_STABLE_TIME 300
 #define VOLTAGE_FOR_2LINE       1200  // in units of mV
 
 #define ERROR_NONE       0
@@ -58,7 +58,7 @@ int get_test_module_flag();
  * 1: start signal arrived
  * 0: no start signal
  */
-int get_start_event();
+int get_start_event(int module);
 
 /*
  * set specified module state.
@@ -68,7 +68,7 @@ int get_start_event();
  *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  state : 0,1 for IDLE and TESTING.
  */
-void set_module_state(int module, int state);
+void set_module_state(int module, int state, int*result);
 
 /*
  * Set test result for specified module

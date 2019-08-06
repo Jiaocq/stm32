@@ -28,7 +28,7 @@ static int32_t ReadAIAdc(uint8_t channel)
         DEBUG("ReadAIAdc err\r\n");
         return -1;
     }
-    return (int32_t)(*((uint16_t *)recvData));
+    return ((int32_t )recvData[0] << 8 | (int32_t) recvData[1] );
 }
 
 static uint16_t ReqAIAdc(uint8_t channel)
@@ -55,7 +55,7 @@ static int32_t ReadDIGAdc(uint8_t channel)
         DEBUG("ReadDIGAdc err\r\n");
         return -1;
     }
-    return (int32_t)(*((uint16_t *)recvData));
+    return ((int32_t )recvData[0] << 8 | (int32_t) recvData[1] );
 }
 
 static uint16_t ReqDIGAdc(uint8_t channel)
@@ -82,7 +82,7 @@ static int32_t ReadHIOAdc(uint8_t channel)
         DEBUG("ReadHIOAdc err\r\n");
         return -1;
     }
-    return (int32_t)(*((uint16_t *)recvData));
+    return ((int32_t )recvData[0] << 8 | (int32_t) recvData[1] );
 }
 
 static uint16_t ReqHIOAdc(uint8_t channel)
