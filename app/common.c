@@ -226,7 +226,7 @@ void set_module_testing_result(int module, int *result)
         {
             if (ledNum <= 15)
             {
-                WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                WriteLED(LEDDI(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 WriteLED(LEDDO(ledNum), 0);
             }
             if (ledNum < 8)
@@ -241,7 +241,7 @@ void set_module_testing_result(int module, int *result)
             if (ledNum <= 15)
             {
                 WriteLED(LEDDI(ledNum), 0);
-                WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                WriteLED(LEDDO(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
             }
             if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
@@ -260,11 +260,11 @@ void set_module_testing_result(int module, int *result)
             if (ledNum < 8)
             {
                 if (ledNum == 1)
-                    WriteLED(LEDAI(2), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(2), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 else if (ledNum == 2)
-                    WriteLED(LEDAI(1), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(1), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
                 else
-                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                    WriteLED(LEDAI(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
             }
             if (ledNum < 12)
                 WriteLED(LEDHIO(ledNum), 0);
@@ -281,7 +281,7 @@ void set_module_testing_result(int module, int *result)
             if (ledNum < 8)
                 WriteLED(LEDAI(ledNum), 0);
             if (ledNum < 12)
-                WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : *(result + ledNum));
+                WriteLED(LEDHIO(ledNum), *(result + ledNum) < 0 ? blinkState : * (result + ledNum));
         }
         break;
     default:
@@ -588,7 +588,8 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
 {
     int ret = 0;
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
@@ -596,12 +597,14 @@ void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
     case 3: /**AI */
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {
+        if (channel >= 9 && channel <= 10)
+        {
             ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
             ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
             ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
-        if (channel >= 11 && channel <= 12) {
+        if (channel >= 11 && channel <= 12)
+        {
             ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
         }
         break;
@@ -624,22 +627,27 @@ void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
  */
 int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 {
-    switch (tb_type) {
+    switch (tb_type)
+    {
     case 1: /**DI */
         break;
     case 2: /**DO */
         break;
     case 3: /**AI */
-        if (channel >= 1 && channel <= 8) {
+        if (channel >= 1 && channel <= 8)
+        {
             *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
             *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
         }
         break;
     case 4: /**HIO */
-        if (channel >= 9 && channel <= 10) {
+        if (channel >= 9 && channel <= 10)
+        {
             *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
-        } else if (channel >= 11 && channel <= 12) {
+        }
+        else if (channel >= 11 && channel <= 12)
+        {
             *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
             *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
         }
@@ -651,7 +659,8 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     INFO("%s get tb hio ai output : tb = %4ld , channel = %4ld , value_A1 = %ld, value_A2 = %ld  \r\n",
          (*value_A1 < 0 || *value_A2 < 0) ? "error for : " : "successful",
          tb_type, channel, *value_A1, *value_A2) ;
-    if (*value_A1 < 0 || *value_A2 < 0) {
+    if (*value_A1 < 0 || *value_A2 < 0)
+    {
         DEBUG("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         return -1;
     }
