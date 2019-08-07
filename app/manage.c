@@ -58,7 +58,7 @@ int test_DI_tb(int *result)
                 result[channel_index] = 1;
             }
             value = (value == 0) ? 1 : 0;
-            if (++num >= 2)
+            if (++num > 2)
             {
                 value = 0;
                 num = 0;
@@ -82,7 +82,7 @@ int test_DI_tb(int *result)
     return ret;
 }
 
-const int voltage_values[VOLTAGE_TEST_NUM] = {0, 500, 1000, 2500, 0};
+const int voltage_values[VOLTAGE_TEST_NUM] = {1000,1500,2000,2500,2500};
 
 /*
  * The test for each channel includes 2-line and 4-line tests.
@@ -153,7 +153,7 @@ int test_AI_tb(int *result)
         if ((get_time_ms() - time_start) > STIMULATION_STABLE_TIME)
         {
             get_tb_ai_output(AI_TB, channel_index + 1, &voltage_A1, &voltage_A2);
-            if ((abs(voltage_values[voltage_value_index] - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
+            if ((abs(voltage_values[voltage_value_index] / 3 - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
             {
                 result[channel_index] = -1;
             }
@@ -233,7 +233,7 @@ int test_DO_tb(int *result)
                 result[channel_index] = 1;
             }
             value = (value == 0) ? 1 : 0;
-            if (++num >= 2)
+            if (++num > 2)
             {
                 value = 0;
                 num = 0;
@@ -381,7 +381,7 @@ int test_HIO_tb(int *result)
             if ((get_time_ms() - time_start) > STIMULATION_STABLE_TIME)
             {
                 get_tb_ai_output(HIO_TB, channel_index + 1, &voltage_A1, &voltage_A2);
-                if ((abs(voltage_values[voltage_value_index] - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
+                if ((abs(voltage_values[voltage_value_index] / 3 - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
                 {
                     result[channel_index] = -1;
                 }
@@ -460,6 +460,7 @@ int manage_entry()
     }
     while (1)
     {
+        refersh_watchdog();
         set_normal_run_flag();
         switch (state)
         {

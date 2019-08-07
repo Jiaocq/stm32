@@ -9,14 +9,15 @@
 #define TEST_MORE_OPERATION     1
 #define TEST_FATAL              -1
 
-#define MAX_AI_GAP              10   // in units of mV
 #define VOLTAGE_TEST_NUM        5
 #define MAX_DI_CHANNEL          15
 #define MAX_AI_CHANNEL          7
 #define MAX_DO_CHANNEL          15
 #define MAX_HIO_CHANNEL         11
-#define STIMULATION_STABLE_TIME 300
-#define VOLTAGE_FOR_2LINE       1200  // in units of mV
+#define STIMULATION_STABLE_TIME 100
+#define VOLTAGE_FOR_2LINE       1000  // in units of mV
+#define VOLTAGE_FULL_SCALE      2500UL
+#define MAX_AI_GAP              50 // VOLTAGE_FULL_SCALE/100   // in units of mV
 
 #define ERROR_NONE       0
 #define ERROR_INIT       1
@@ -31,6 +32,9 @@
  * others: hardware init failed.
  */
 int hw_init();
+
+/**feed dog  */
+void refersh_watchdog();
 
 /*
  * Get current time in units of ms
@@ -68,7 +72,7 @@ int get_start_event(int module);
  *  module: 1,2,3,4 for DI/DO/AI/HIO respectively.
  *  state : 0,1 for IDLE and TESTING.
  */
-void set_module_state(int module, int state, int*result);
+void set_module_state(int module, int state, int *result);
 
 /*
  * Set test result for specified module

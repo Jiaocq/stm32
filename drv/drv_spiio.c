@@ -273,8 +273,8 @@ int WriteDIDOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
         WriteDIDO(WriteReg(devId, OLATA, ioState));
         if (ioState != ReadDIDO(ReadReg(devId, OLATA)))
             return -1;
-        if (ioState != ReadDIDO(ReadReg(devId, IOA)))
-            return -2;
+        // if (ioState != ReadDIDO(ReadReg(devId, IOA)))
+        //     return -2;
     }
     else if (pinId < 16)
     {
@@ -287,8 +287,8 @@ int WriteDIDOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
         WriteDIDO(WriteReg(devId, OLATB, ioState));
         if (ioState != ReadDIDO(ReadReg(devId, OLATB)))
             return -1;
-        if (ioState != ReadDIDO(ReadReg(devId, IOB)))
-            return -2;
+        // if (ioState != ReadDIDO(ReadReg(devId, IOB)))
+        //     return -2;
     }
     else
     {
@@ -341,8 +341,8 @@ int WriteAIHIOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
         WriteAIHIO(WriteReg(devId, OLATA, ioState));
         if (ioState != ReadAIHIO(ReadReg(devId, OLATA)))
             return -1;
-        if (ioState != ReadAIHIO(ReadReg(devId, IOA)))
-            return -2;
+        // if (ioState != ReadAIHIO(ReadReg(devId, IOA)))
+        //     return -2;
     }
     else if (pinId < 16)
     {
@@ -355,8 +355,8 @@ int WriteAIHIOPin(uint8_t devId, uint8_t pinId, uint8_t pinState)
         WriteAIHIO(WriteReg(devId, OLATB, ioState));
         if (ioState != ReadAIHIO(ReadReg(devId, OLATB)))
             return -1;
-        if (ioState != ReadAIHIO(ReadReg(devId, IOB)))
-            return -2;
+        // if (ioState != ReadAIHIO(ReadReg(devId, IOB)))
+        //     return -2;
     }
     else
         return -1;

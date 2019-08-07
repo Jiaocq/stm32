@@ -20,10 +20,34 @@ int cunit()
     int32_t channel = 0;
     int32_t pinstate[4];
     int32_t spicount = 0;
+    int32_t pinValue = 0;
     /**harsware init */
     HardwareInit();
     LEDInit();
     WriteLED(LED5, 1); /**power led on*/
+    /**twst DI */
+    for (channel = 16; channel--;)
+    {
+        pinValue = WriteDIDOPin(TODI, channel, 1);
+        pinValue = WriteDIDOPin(TODO, channel, 1);
+    }
+    pinValue = ReadDIDOPin(FROMDI, 0);
+    pinValue = ReadDIDOPin(FROMDO, 0);
+    pinValue = ReadDIDOPin(FROMDI, 8);
+    pinValue = ReadDIDOPin(FROMDO, 8);
+
+    for (channel = 16; channel--;)
+    {
+        pinValue = WriteDIDOPin(TODI, channel, 0);
+        pinValue = WriteDIDOPin(TODO, channel, 0);
+    }
+    pinValue = ReadDIDOPin(FROMDI, 0);
+    pinValue = ReadDIDOPin(FROMDO, 0);
+    pinValue = ReadDIDOPin(FROMDI, 8);
+    pinValue = ReadDIDOPin(FROMDO, 8);
+    DEBUG("%d\r\n", pinValue);
+
+
     // hw_init();
     /**debug */
     DEBUG("test start\r\n");
@@ -40,7 +64,8 @@ int cunit()
     HAL_Delay(100);
     keeptime = TimeUs() - time0;
     DEBUG("TimeUs = %lu .\r\n", (uint32_t)keeptime);
-    while (0) {
+    while (0)
+    {
         AIAdcInit();
         adcValue[0] = AIReadCh(0);
         adcValue[1] = AIReadCh(1);
@@ -54,7 +79,8 @@ int cunit()
               adcValue[0], adcValue[1], adcValue[2], adcValue[3], adcValue[4], adcValue[5], adcValue[6], adcValue[7]);
         HAL_Delay(50);
     }
-    while (0) {
+    while (0)
+    {
         /**u90 */
         // AIAdcInit();
         DIGAdcInit();
@@ -71,7 +97,8 @@ int cunit()
         HAL_Delay(50);
     }
 
-    while (0) {
+    while (0)
+    {
         // AIAdcInit();
         // DIGAdcInit();
         HIOAdcInit();
@@ -91,7 +118,8 @@ int cunit()
     /**ad5686 */
     AD5686Init();
     uint16_t value = 0xffff;
-    while (0) {
+    while (0)
+    {
         // value += 0x1000U;
         WriteAD5686Value(0, value);
         WriteAD5686Value(1, value);
@@ -105,14 +133,16 @@ int cunit()
 
     /**dac8568 */
     DAC8568Init();
-    for (channel = 8; channel;) {
+    for (channel = 8; channel;)
+    {
         channel--;
         WriteDAC8568Value(channel, 0);
         WriteDAC8568Value(channel, 0x1248);
     }
 
     value = 0;
-    while (0) {
+    while (0)
+    {
         WriteDAC8568AllCh(0x00);
         WriteDAC8568AllCh(0xffff);
         HAL_Delay(500);
@@ -316,12 +346,16 @@ int cunit()
     /** spi io*/
     // DEBUG("spiio : %d",SpiioIinit());
 
-    while (0) {
+    while (0)
+    {
         DEBUG("di14 : %d\r\n", ReadDIDOPin(FROMDI, 14));
         HAL_Delay(10);
     }
+
+
     /**write 0 */
-    for (spicount = 16; spicount--;) {
+    for (spicount = 16; spicount--;)
+    {
         WriteDIDOPin(TODI, spicount, 0);
         WriteDIDOPin(TODI, spicount, 1);
         WriteDIDOPin(TODO, spicount, 0);
@@ -332,7 +366,8 @@ int cunit()
         WriteAIHIOPin(TOFROMHIO, spicount, 1);
     }
     /**write 1 */
-    for (spicount = 16; spicount--;) {
+    for (spicount = 16; spicount--;)
+    {
         WriteAIHIOPin(TOAI, spicount, 1);
         WriteAIHIOPin(TOFROMHIO, spicount, 1);
         WriteDIDOPin(TODI, spicount, 1);
@@ -340,7 +375,8 @@ int cunit()
     }
 
     /**read 0 */
-    for (spicount = 16; spicount--;) {
+    for (spicount = 16; spicount--;)
+    {
         pinstate[0] = ReadDIDOPin(FROMDI, spicount);
         pinstate[1] = ReadDIDOPin(FROMDO, spicount);
         pinstate[2] = ReadAIHIOPin(FROMHIO, spicount);
@@ -348,7 +384,8 @@ int cunit()
         DEBUG("pinstate = %d\t%d\t%d\t%d\r\n", pinstate[0], pinstate[1], pinstate[2], pinstate[3]);
     }
     /**read 1 */
-    for (spicount = 16; spicount--;) {
+    for (spicount = 16; spicount--;)
+    {
         pinstate[0] = ReadDIDOPin(FROMDI, spicount);
         pinstate[1] = ReadDIDOPin(FROMDO, spicount);
         pinstate[2] = ReadAIHIOPin(FROMHIO, spicount);

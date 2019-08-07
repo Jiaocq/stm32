@@ -7,6 +7,7 @@ int main(void)
     cunit();/**for debug*/
 #endif
     manage_entry();
-    while (1) {
+    while (1)
+    {
     }
 }

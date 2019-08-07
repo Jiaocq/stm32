@@ -44,6 +44,12 @@ int hw_init()
     return ret;
 }
 
+/**feed dog  */
+void refersh_watchdog()
+{
+
+}
+
 /*
  * Get current time in units of ms
  */
@@ -194,10 +200,13 @@ void set_module_state(int module, int state, int *result)
         uint16_t resultSum = 0;
         for (; resultCount--;)
         {
-            resultSum += *(result + resultCount);
+            if ( *(result + resultCount) < 0 )
+            {
+                resultSum += 1;
+            }
         }
         INFO("\r\n********************************************************************************\r\n");
-        INFO("test module %d complete, %s \r\n", module, result == 0 ? "and test pass" : "but test failure");
+        INFO("test module %d complete, %s, error count = %4ld \r\n", module, result == 0 ? "and test pass" : "but test failure", resultSum);
         INFO("********************************************************************************\r\n");
     }
     lastState = state;
@@ -394,16 +403,20 @@ void set_tb_digital_stimulation(int tb_type, int channel, int value)
         ret = WriteDIDOPin(TODI, 16 - channel, !(uint8_t)value); /**output 0 will get 1 */
         break;
     case 2: /**DO */
-        ret = WriteDIDOPin(TODO, channel - 1, (uint8_t)value);
+        ret = WriteDIDOPin(TODO, channel - 1, !(uint8_t)value);
         break;
     case 3: /**AI */
         ERROR("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
         break;
     case 4: /**HIO */
         if (channel <= 4 && channel >= 1)
-            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, !((uint8_t)value)); /**output 0 will get 1 */
+        {
+            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, !(uint8_t)value); /**output 0 will get 1 */
+        }
         else if (channel <= 8 && channel >= 5)
-            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, (uint8_t)value); /**output 0 will get 1 */
+        {
+            ret = WriteAIHIOPin(TOFROMHIO, channel + 3, !(uint8_t)value); /**output 0 will get 1 */
+        }
         break;
     default:
         ERROR("Error : %s(%d)-<%s> \r\n", __FILE__, __LINE__, __FUNCTION__);
@@ -508,7 +521,7 @@ void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
         {
             ret += WriteAIHIOPin(TOAI, channel + 7, 0); /**2lines manage */
             ret += WriteAIHIOPin(TOAI, channel - 1, 1); /**4line manage */
-            ret += WriteDAC8568Value(channel - 1, (uint32_t)value * 0xffffUL / 2500UL);
+            ret += WriteDAC8568Value(channel - 1, (uint32_t)value * 0xffffUL / VOLTAGE_FULL_SCALE);
         }
         break;
     case 4: /**HIO */
@@ -516,7 +529,7 @@ void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
         {
             ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
             ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
-            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / VOLTAGE_FULL_SCALE);
         }
         break;
     default:
@@ -547,20 +560,20 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffffL);
-            *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffffL);
+            *value_A1 = (int)(AIReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL);
+            *value_A2 = (int)(DIGReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL);
         }
         break;
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffffL);
+            *value_A1 = (int)(HIOReadCh(channel - 9) * VOLTAGE_FULL_SCALE / 0xffffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
         }
         else if (channel >= 11 && channel <= 12)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffffL);
+            *value_A1 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
         }
         break;
     default:
@@ -601,11 +614,11 @@ void set_tb_hio_ai_4lines_stimulation(int tb_type, int channel, int value)
         {
             ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 1); /**4line */
             ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
-            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / VOLTAGE_FULL_SCALE);
         }
         if (channel >= 11 && channel <= 12)
         {
-            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / VOLTAGE_FULL_SCALE);
         }
         break;
     default:
@@ -636,20 +649,20 @@ int get_tb_hio_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            *value_A1 = (int)(AIReadCh(channel - 1) * 2500L / 0xffL);
-            *value_A2 = (int)(DIGReadCh(channel - 1) * 2500L / 0xffL);
+            *value_A1 = (int)(AIReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffL);
+            *value_A2 = (int)(DIGReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffL);
         }
         break;
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 9) * 2500L / 0xffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+            *value_A1 = (int)(HIOReadCh(channel - 9) * VOLTAGE_FULL_SCALE / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffL);
         }
         else if (channel >= 11 && channel <= 12)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * 2500L / 0xffL);
+            *value_A1 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffL);
+            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffL);
         }
         break;
     default:
@@ -692,7 +705,7 @@ int set_tb_ao_stimulation(int tb_type, int channel, int value)
     case 4: /**HIO */
         if (channel >= 11 && channel <= 12)
         {
-            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / 2500UL);
+            ret += WriteAD5686Value(channel - 9, (uint32_t)value * 0xffffUL / VOLTAGE_FULL_SCALE);
         }
         break;
     default:
@@ -727,7 +740,7 @@ int get_tb_ao_output(int tb_type, int channel, int *value)
     case 4: /**HIO */
         if (channel >= 11 && channel <= 12)
         {
-            *value = (int)(HIOReadCh(channel - 7) * 2500L / 0xffffL);
+            *value = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
         }
         break;
     default:
