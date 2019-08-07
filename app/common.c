@@ -159,7 +159,7 @@ void set_module_state(int module, int state, int *result)
     if (state)
         blinkState = (uint8_t)(TimeMs() / (uint64_t)100 % (uint64_t)2);
     else
-        blinkState = (uint8_t)(TimeMs() / (uint64_t)1000 % (uint64_t)2);
+        blinkState = (uint8_t)(TimeMs() / (uint64_t)2000 % (uint64_t)2);
     switch (module)
     {
     case 1:
