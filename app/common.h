@@ -15,7 +15,7 @@
 #define MAX_DO_CHANNEL          15
 #define MAX_HIO_CHANNEL         11
 #define STIMULATION_STABLE_TIME 100
-#define VOLTAGE_FOR_2LINE       1000  // in units of mV
+#define VOLTAGE_FOR_2LINE       1200  // in units of mV
 #define VOLTAGE_FULL_SCALE      2500UL
 #define MAX_AI_GAP              50 // VOLTAGE_FULL_SCALE/100   // in units of mV
 

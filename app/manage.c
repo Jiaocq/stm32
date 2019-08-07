@@ -153,7 +153,7 @@ int test_AI_tb(int *result)
         if ((get_time_ms() - time_start) > STIMULATION_STABLE_TIME)
         {
             get_tb_ai_output(AI_TB, channel_index + 1, &voltage_A1, &voltage_A2);
-            if ((abs(voltage_values[voltage_value_index] / 3 - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
+            if ((abs(voltage_values[voltage_value_index] - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
             {
                 result[channel_index] = -1;
             }
@@ -381,7 +381,7 @@ int test_HIO_tb(int *result)
             if ((get_time_ms() - time_start) > STIMULATION_STABLE_TIME)
             {
                 get_tb_ai_output(HIO_TB, channel_index + 1, &voltage_A1, &voltage_A2);
-                if ((abs(voltage_values[voltage_value_index] / 3 - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
+                if ((abs(voltage_values[voltage_value_index] - voltage_A1) > MAX_AI_GAP) || (abs(voltage_A2 - (voltage_A1 / 2)) > MAX_AI_GAP))
                 {
                     result[channel_index] = -1;
                 }
