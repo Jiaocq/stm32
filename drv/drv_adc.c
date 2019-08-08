@@ -6,19 +6,20 @@
 #include "drv_uart.h"
 #include "main.h"
 
-#define AIAdcSPIBUS hspi4  /**u88 u91 */
-#define DIGAdcSPIBUS hspi4 /**u88 u91 */
-#define HIOAdcSPIBUS hspi5
-#define TIMEOUT 1000 /*ms */
-#define AIAdcFrameLength 2
-#define DIGAdcFrameLength 2
-#define HIOAdcFrameLength 2
+#define AIAdcSPIBUS         hspi4  /**u88 u91 */
+#define DIGAdcSPIBUS        hspi4 /**u88 u91 */
+#define HIOAdcSPIBUS        hspi5
+#define TIMEOUT             1000 /*ms */
+#define AIAdcFrameLength    2
+#define DIGAdcFrameLength   2
+#define HIOAdcFrameLength   2
 
 static int32_t ReadAIAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
     uint8_t recvData[2] = {0};
     uint8_t recvReg[2] = {0};
+    DelayUs(5);
     HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&AIAdcSPIBUS, recvData, AIAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&AIAdcSPIBUS, recvReg, AIAdcFrameLength, TIMEOUT);
@@ -34,7 +35,8 @@ static int32_t ReadAIAdc(uint8_t channel)
 
 static uint16_t ReqAIAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
+    DelayUs(5);
     HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&AIAdcSPIBUS, sendData, AIAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_1_SPI4_CS_ADC_GPIO_Port, MCU_1_SPI4_CS_ADC_Pin, GPIO_PIN_SET);
@@ -44,9 +46,10 @@ static uint16_t ReqAIAdc(uint8_t channel)
 
 static int32_t ReadDIGAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
     uint8_t recvData[2] = {0};
     uint8_t recvReg[2] = {0};
+    DelayUs(5);
     HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&DIGAdcSPIBUS, recvData, DIGAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&DIGAdcSPIBUS, recvReg, DIGAdcFrameLength, TIMEOUT);
@@ -62,7 +65,8 @@ static int32_t ReadDIGAdc(uint8_t channel)
 
 static uint16_t ReqDIGAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
+    DelayUs(5);
     HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&DIGAdcSPIBUS, sendData, DIGAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(MCU_1_SPI4_DIGCS_ADC_GPIO_Port, MCU_1_SPI4_DIGCS_ADC_Pin, GPIO_PIN_SET);
@@ -72,9 +76,10 @@ static uint16_t ReqDIGAdc(uint8_t channel)
 
 static int32_t ReadHIOAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
     uint8_t recvData[2] = {0};
     uint8_t recvReg[2] = {0};
+    DelayUs(5);
     HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Receive(&HIOAdcSPIBUS, recvData, HIOAdcFrameLength, TIMEOUT);
     HAL_SPI_Receive(&HIOAdcSPIBUS, recvReg, HIOAdcFrameLength, TIMEOUT);
@@ -90,7 +95,8 @@ static int32_t ReadHIOAdc(uint8_t channel)
 
 static uint16_t ReqHIOAdc(uint8_t channel)
 {
-    uint8_t sendData[2] = {0xe1 | channel << 1, 0xe0};
+    uint8_t sendData[2] = {0xe0 | channel << 1, 0xe0};
+    DelayUs(5);
     HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&HIOAdcSPIBUS, sendData, HIOAdcFrameLength, TIMEOUT);
     HAL_GPIO_WritePin(HIO_SPI5_CS_ADC_GPIO_Port, HIO_SPI5_CS_ADC_Pin, GPIO_PIN_SET);

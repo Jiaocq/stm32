@@ -10,8 +10,11 @@
 #include "drv_uart.h"
 #include "common.h"
 
+#define GETADCCOUNT 1
 static int keyState = 0;
 static int lastKeyState = 0;
+static int32_t adcValueSum[GETADCCOUNT];
+static const uint64_t delayTime = (uint64_t)3000;
 
 /*
  * Hardware init
@@ -25,7 +28,7 @@ int hw_init()
     int ret = 0;
     ret += HardwareInit();
     LEDInit();
-    WriteLED(LED5, 1); /**power led on*/
+    // WriteLED(LED5, 1); /**power led on*/
     ret += AIAdcInit();
     ret += DIGAdcInit();
     ret += HIOAdcInit();
@@ -101,7 +104,9 @@ int get_start_event(int module)
 {
     static uint64_t startTime = 0;
     static uint64_t keepTime = 0;
-    static const uint64_t changeStateTime = 50;
+    static const uint64_t changeStateTime = (uint64_t)50;
+    static uint64_t delayTimeStart = 0;
+    static int ret = 0;
     switch (getStartKey())
     {
     case 0:
@@ -118,8 +123,9 @@ int get_start_event(int module)
         if (1 == keyState && changeStateTime < keepTime)
         {
             keyState = 0;
+            ret = 1;
+            delayTimeStart = TimeMs();
             INFO("start key pressed for module : %d\r\n", module);
-            return 1;
         }
         break;
     case 1:
@@ -136,10 +142,24 @@ int get_start_event(int module)
         if (0 == keyState && changeStateTime < keepTime)
         {
             keyState = 1;
+            ret = 1;
+            delayTimeStart = TimeMs();
             INFO("start key pressed for module : %d\r\n", module);
-            return 1;
         }
         break;
+    }
+    if (ret == 1 )
+    {
+        WriteLED(LED7, 1);
+        if (TimeMs() - delayTimeStart > delayTime)
+        {
+            ret = 0;
+            return 1;
+        }
+    }
+    else
+    {
+        WriteLED(LED7, 0);
     }
     return 0;
 }
@@ -305,7 +325,7 @@ void set_module_testing_result(int module, int *result)
 void set_normal_run_flag()
 {
     uint8_t blinkState = (uint8_t)(TimeMs() / (uint64_t)2000 % (uint64_t)2);
-    WriteLED(LED7, blinkState); /**state */
+    WriteLED(LED5, blinkState); /**state */
 }
 
 /*
@@ -319,25 +339,25 @@ void set_error_indication(int error_num)
     switch (error_num)
     {
     case ERROR_INIT:
-        if (time < 700UL)
+        if (time < 1000UL)
             ledState = 1;
-        else if (time < 900UL)
+        else if (time < 1200UL)
             ledState = 0;
-        else if (time < 1000UL)
+        else if (time < 1300UL)
             ledState = 1;
         else
             ledState = 0;
         break;
     case ERROR_MODULE:
-        if (time < 700UL)
+        if (time < 1000UL)
             ledState = 1;
-        else if (time < 900UL)
-            ledState = 0;
-        else if (time < 1000UL)
-            ledState = 1;
-        else if (time < 1100UL)
-            ledState = 0;
         else if (time < 1200UL)
+            ledState = 0;
+        else if (time < 1300UL)
+            ledState = 1;
+        else if (time < 1500UL)
+            ledState = 0;
+        else if (time < 1600UL)
             ledState = 1;
         else
             ledState = 0;
@@ -359,19 +379,19 @@ void set_error_indication(int error_num)
         WriteLED(LED17, 0);
         break;
     case ERROR_TEST_FATAL:
-        if (time < 700UL)
+        if (time < 1000UL)
             ledState = 1;
-        else if (time < 900UL)
-            ledState = 0;
-        else if (time < 1000UL)
-            ledState = 1;
-        else if (time < 1100UL)
-            ledState = 0;
         else if (time < 1200UL)
-            ledState = 1;
-        else if (time < 1300UL)
             ledState = 0;
-        else if (time < 1400UL)
+        else if (time < 1300UL)
+            ledState = 1;
+        else if (time < 1500UL)
+            ledState = 0;
+        else if (time < 1600UL)
+            ledState = 1;
+        else if (time < 1800UL)
+            ledState = 0;
+        else if (time < 1900UL)
             ledState = 1;
         else
             ledState = 0;
@@ -549,6 +569,7 @@ void set_tb_ai_4lines_stimulation(int tb_type, int channel, int value)
  */
 int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
 {
+    int ret = 0;
     switch (tb_type)
     {
     case 1: /**DI */
@@ -560,20 +581,44 @@ int get_tb_ai_output(int tb_type, int channel, int *value_A1, int *value_A2)
     case 3: /**AI */
         if (channel >= 1 && channel <= 8)
         {
-            *value_A1 = (int)(AIReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL);
-            *value_A2 = (int)(DIGReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL);
+            adcValueSum[1] = 0;
+            adcValueSum[2] = 0;
+            for (uint8_t ad = GETADCCOUNT; ad--;)
+            {
+                adcValueSum[1] += (int)(AIReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL) ;
+                adcValueSum[2] += (int)(DIGReadCh(channel - 1) * VOLTAGE_FULL_SCALE / 0xffffL);
+            }
+            *value_A1 = adcValueSum[1] / GETADCCOUNT;
+            *value_A2 = adcValueSum[2] / GETADCCOUNT;
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 5, 0); /**2line */
+            ret += WriteAIHIOPin(TOFROMHIO, channel + 3, 0); /**4line */
+            DAC8568Init();
         }
         break;
     case 4: /**HIO */
         if (channel >= 9 && channel <= 10)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 9) * VOLTAGE_FULL_SCALE / 0xffffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
+            adcValueSum[1] = 0;
+            adcValueSum[2] = 0;
+            for (uint8_t ad = GETADCCOUNT; ad--;)
+            {
+                adcValueSum[1] += (int)(HIOReadCh(channel - 9) * VOLTAGE_FULL_SCALE / 0xffffL);
+                adcValueSum[2] += (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
+            }
+            *value_A1 = adcValueSum[1] / GETADCCOUNT;
+            *value_A2 = adcValueSum[2] / GETADCCOUNT;
         }
         else if (channel >= 11 && channel <= 12)
         {
-            *value_A1 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
-            *value_A2 = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
+            adcValueSum[1] = 0;
+            adcValueSum[2] = 0;
+            for (uint8_t ad = GETADCCOUNT; ad--;)
+            {
+                adcValueSum[1] += (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL) ;
+                adcValueSum[2] += (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL) ;
+            }
+            *value_A1 = adcValueSum[1] / GETADCCOUNT;
+            *value_A2 = adcValueSum[2] / GETADCCOUNT;
         }
         break;
     default:
@@ -740,7 +785,14 @@ int get_tb_ao_output(int tb_type, int channel, int *value)
     case 4: /**HIO */
         if (channel >= 11 && channel <= 12)
         {
-            *value = (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL);
+            adcValueSum[1] = 0;
+            adcValueSum[2] = 0;
+            for (uint8_t ad = GETADCCOUNT; ad--;)
+            {
+                adcValueSum[1] += (int)(HIOReadCh(channel - 7) * VOLTAGE_FULL_SCALE / 0xffffL) ;
+            }
+            *value = adcValueSum[1] / GETADCCOUNT;
+            AD5686Init();
         }
         break;
     default:

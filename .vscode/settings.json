@@ -15,6 +15,7 @@
         "drv_dac.h": "c",
         "drv_key.h": "c",
         "drv_mode.h": "c",
-        "drv_spiio.h": "c"
+        "drv_spiio.h": "c",
+        "drv_time.h": "c"
     }
 }

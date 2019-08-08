@@ -20,7 +20,7 @@
 
 #define AD5686Rst (0x60UL << 8 * 0)
 #define AD5686WrtReg(channel, data) (0x30UL << 8 * 0 | channel << 8 * 0 | (data & 0xffUL) << 8 * 2 | (data & 0xff00UL) << 8 * 0) /*channel DCBA */
-#define AD5686PwrDwnAll (0x40UL << 8 * 0 | 0xaaUL << 8 * 2)
+#define AD5686PwrDwnAll (0x40UL << 8 * 0 | 0x55UL << 8 * 2)
 #define AD5686PwrUpAll (0x40UL << 8 * 0)
 #define AD5686PwrUpCh(channel) (0x40UL << 8 * 0 | (0xaaUL & ~(0x03UL << channel * 2)) << 8 * 2)
 #define AD5686ReadBack (0x90UL << 8 * 0)

@@ -15,9 +15,13 @@
 #define MAX_DO_CHANNEL          15
 #define MAX_HIO_CHANNEL         11
 #define STIMULATION_STABLE_TIME 100
-#define VOLTAGE_FOR_2LINE       1200  // in units of mV
+#define VOLTAGE_FOR_2LINE       1620  // in units of mV
 #define VOLTAGE_FULL_SCALE      2500UL
-#define MAX_AI_GAP              50 // VOLTAGE_FULL_SCALE/100   // in units of mV
+#define MAX_RESISTER_GAP        13
+#define MAX_AI_2LINE_GAP        150        
+#define MAX_AI_4LINE_GAP        155 // VOLTAGE_FULL_SCALE/100   // in units of mV
+#define MAX_AO_GAP              65
+#define VOLTAGE_RATIO           2 / 5  /**(Vset -300)/250*100 = Vadc */
 
 #define ERROR_NONE       0
 #define ERROR_INIT       1
