@@ -13,7 +13,7 @@
 #define GETADCCOUNT 1
 static int keyState = 0;
 static int lastKeyState = 0;
-static int32_t adcValueSum[GETADCCOUNT];
+static int32_t adcValueSum[10];
 static const uint64_t delayTime = (uint64_t)3000;
 
 /*
