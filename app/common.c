@@ -93,6 +93,18 @@ int get_test_module_flag()
 }
 
 /*
+ * get close state DI tb  or open state DI tb
+ *
+ * return value:
+ * 1: close state
+ * 0: open state
+ */
+int get_close_open_state()
+{
+    return getOpenClosedKey();
+}
+
+/*
  * get start event
  *
  * return value:

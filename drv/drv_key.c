@@ -12,3 +12,14 @@ int getStartKey()
     }
     return 0;
 }
+
+/**return 0,1 for closed or open */
+int getOpenClosedKey()
+{
+    if (GPIO_PIN_RESET == HAL_GPIO_ReadPin(MCU_MODE_SWITCH_GPIO_Port, MCU_MODE_SWITCH_Pin))
+    {
+        return 0;
+    }
+    return 1;
+
+}

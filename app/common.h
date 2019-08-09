@@ -19,8 +19,8 @@
 #define VOLTAGE_FULL_SCALE      2500UL
 #define MAX_RESISTER_GAP        13
 #define MAX_AI_2LINE_GAP        150        
-#define MAX_AI_4LINE_GAP        155 // VOLTAGE_FULL_SCALE/100   // in units of mV
-#define MAX_AO_GAP              65
+#define MAX_AI_4LINE_GAP        150 // VOLTAGE_FULL_SCALE/100   // in units of mV
+#define MAX_AO_GAP              150
 #define VOLTAGE_RATIO           2 / 5  /**(Vset -300)/250*100 = Vadc */
 
 #define ERROR_NONE       0
@@ -58,6 +58,15 @@ unsigned long long get_time_ms();
  *
  */
 int get_test_module_flag();
+
+/*
+ * get close state DI tb  or open state DI tb
+ *
+ * return value:
+ * 1: close state
+ * 0: open state
+ */
+int get_close_open_state();
 
 /*
  * get start event

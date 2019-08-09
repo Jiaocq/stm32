@@ -49,7 +49,7 @@ int test_DI_tb(int *result)
     case 2:
         if ((get_time_ms() - time_start) >= STIMULATION_STABLE_TIME)
         {
-            if (value != get_tb_digital_output(DI_TB, channel_index + 1))
+            if (((get_close_open_state() == 0) ? 1 : value) != get_tb_digital_output(DI_TB, channel_index + 1))
             {
                 result[channel_index] = -1;
             }
@@ -82,7 +82,7 @@ int test_DI_tb(int *result)
     return ret;
 }
 
-const int voltage_values[VOLTAGE_TEST_NUM] = { 1000, 1200, 1600, 1800,2000};
+const int voltage_values[VOLTAGE_TEST_NUM] = { 1000, 1200, 1600, 1800, 2000};
 
 /*
  * The test for each channel includes 2-line and 4-line tests.
@@ -315,7 +315,7 @@ int test_HIO_tb(int *result)
         {
             if (channel_index <= 7)
             {
-                if (value != get_tb_digital_output(HIO_TB, channel_index + 1))
+                if (((channel_index <= 3 && get_close_open_state() == 0) ? 1 : value) != get_tb_digital_output(HIO_TB, channel_index + 1))
                 {
                     result[channel_index] = -1;
                 }
